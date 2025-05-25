@@ -48,7 +48,7 @@
                         </li>
 
                         <li class="sidebar-item">
-                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/admin/attendance">
+                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/attendance">
                                 <i data-feather="calendar" class="feather-icon"></i>
                                 <span class="hide-menu">Chấm công</span>
                             </a>

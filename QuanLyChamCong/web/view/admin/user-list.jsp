@@ -92,6 +92,10 @@
                                                                     </a>
                                                                 </c:otherwise>
                                                             </c:choose>
+
+
+                                                            <a href="${pageContext.request.contextPath}/admin/user-edit?userId=${u.userId}" 
+                                                               class="btn btn-sm btn-warning">Sửa</a>
                                                         </td>
 
 

@@ -220,25 +220,31 @@ public class UserDAO extends DBContext {
         }
     }
 
-    public Users getUserById(int userId) {
-        String sql = "SELECT * FROM users WHERE user_id = ?";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                Users u = new Users();
-                u.setUserId(rs.getInt("user_id"));
-                u.setUsername(rs.getString("username"));
-                u.setEmail(rs.getString("email"));
-                u.setStatus(rs.getString("status"));
-                u.setBanReason(rs.getString("ban_reason"));
-                return u;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+public Users getUserById(int userId) {
+    String sql = "SELECT * FROM users WHERE user_id = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, userId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Users u = new Users();
+            u.setUserId(rs.getInt("user_id"));
+            u.setUsername(rs.getString("username"));
+            u.setPasswordHash(rs.getString("password_hash"));
+            u.setFullName(rs.getString("full_name"));
+            u.setEmail(rs.getString("email"));
+            u.setPhone(rs.getString("phone"));
+            u.setRole(rs.getString("role"));
+            u.setEmploymentType(rs.getString("employment_type"));
+            u.setStatus(rs.getString("status"));
+            u.setCreatedAt(rs.getTimestamp("created_at"));
+            u.setBanReason(rs.getString("ban_reason"));
+            return u;
         }
-        return null;
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+    return null;
+}
 
     public boolean updateBanStatus(Users user) {
         String sql = "UPDATE users SET status = ?, ban_reason = ? WHERE user_id = ?";
@@ -257,6 +263,27 @@ public class UserDAO extends DBContext {
         String sql = "UPDATE users SET status = 'active', ban_reason = NULL WHERE user_id = ?";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateUser(Users user) {
+        String sql = "UPDATE users SET full_name = ?, email = ?, phone = ?, role = ?, "
+                + "status = ?, ban_reason = ? WHERE user_id = ?";
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, user.getFullName());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getPhone());
+            ps.setString(4, user.getRole());
+            ps.setString(5, user.getStatus());
+            ps.setString(6, user.getBanReason());
+            ps.setInt(7, user.getUserId());
+
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();

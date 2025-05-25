@@ -4,62 +4,64 @@
  */
 package model;
 
+import io.opencensus.common.Timestamp;
+
 /**
  *
  * @author kinkin
  */
 public class UserLocations {
 
-    private int userLocationId;
-    private Users user;
-    private Locations location;
-    private boolean isDefault;
+    private int id;
+    private int userId;
+    private int locationId;
+    private Timestamp assignedAt;
 
     public UserLocations() {
     }
 
-    public UserLocations(int userLocationId, Users user, Locations location, boolean isDefault) {
-        this.userLocationId = userLocationId;
-        this.user = user;
-        this.location = location;
-        this.isDefault = isDefault;
+    public UserLocations(int id, int userId, int locationId, Timestamp assignedAt) {
+        this.id = id;
+        this.userId = userId;
+        this.locationId = locationId;
+        this.assignedAt = assignedAt;
     }
 
-    public int getUserLocationId() {
-        return userLocationId;
+    public int getId() {
+        return id;
     }
 
-    public void setUserLocationId(int userLocationId) {
-        this.userLocationId = userLocationId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public Users getUser() {
-        return user;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser(Users user) {
-        this.user = user;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public Locations getLocation() {
-        return location;
+    public int getLocationId() {
+        return locationId;
     }
 
-    public void setLocation(Locations location) {
-        this.location = location;
+    public void setLocationId(int locationId) {
+        this.locationId = locationId;
     }
 
-    public boolean isIsDefault() {
-        return isDefault;
+    public Timestamp getAssignedAt() {
+        return assignedAt;
     }
 
-    public void setIsDefault(boolean isDefault) {
-        this.isDefault = isDefault;
+    public void setAssignedAt(Timestamp assignedAt) {
+        this.assignedAt = assignedAt;
     }
 
     @Override
     public String toString() {
-        return "UserLocations{" + "userLocationId=" + userLocationId + ", user=" + user + ", location=" + location + ", isDefault=" + isDefault + '}';
+        return "UserLocations{" + "id=" + id + ", userId=" + userId + ", locationId=" + locationId + ", assignedAt=" + assignedAt + '}';
     }
 
 }

@@ -40,6 +40,12 @@
                                 <span class="hide-menu">Quản lý địa điểm</span>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/admin/assign-user-location">
+                                <i data-feather="user-check" class="feather-icon"></i>
+                                <span class="hide-menu">Phân công nhân viên</span>
+                            </a>
+                        </li>
 
                         <li class="sidebar-item">
                             <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/admin/attendance">

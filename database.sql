@@ -115,3 +115,11 @@ CREATE TABLE audit_logs (
     created_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+CREATE TABLE password_reset_tokens (
+    token VARCHAR(255) PRIMARY KEY,
+    user_id INT NOT NULL,
+    created_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+

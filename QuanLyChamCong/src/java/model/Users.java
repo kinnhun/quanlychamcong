@@ -4,7 +4,7 @@
  */
 package model;
 
-import io.opencensus.common.Timestamp;
+import java.sql.Timestamp;
 
 /**
  *

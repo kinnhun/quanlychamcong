@@ -1,0 +1,124 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package model;
+
+import io.opencensus.common.Timestamp;
+import java.util.Date;
+
+public class LeaveRequest {
+
+    private int requestId;
+    private Users user;
+    private Date startDate;
+    private Date endDate;
+    private String leaveType;
+    private String status;
+    private int daysCount;
+    private String reason;
+    private Timestamp createdAt;
+    private Users approvedBy;
+
+    public LeaveRequest() {
+    }
+
+    public LeaveRequest(int requestId, Users user, Date startDate, Date endDate, String leaveType, String status, int daysCount, String reason, Timestamp createdAt, Users approvedBy) {
+        this.requestId = requestId;
+        this.user = user;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.leaveType = leaveType;
+        this.status = status;
+        this.daysCount = daysCount;
+        this.reason = reason;
+        this.createdAt = createdAt;
+        this.approvedBy = approvedBy;
+    }
+
+    public int getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(int requestId) {
+        this.requestId = requestId;
+    }
+
+    public Users getUser() {
+        return user;
+    }
+
+    public void setUser(Users user) {
+        this.user = user;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getLeaveType() {
+        return leaveType;
+    }
+
+    public void setLeaveType(String leaveType) {
+        this.leaveType = leaveType;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getDaysCount() {
+        return daysCount;
+    }
+
+    public void setDaysCount(int daysCount) {
+        this.daysCount = daysCount;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Users getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(Users approvedBy) {
+        this.approvedBy = approvedBy;
+    }
+
+    @Override
+    public String toString() {
+        return "LeaveRequest{" + "requestId=" + requestId + ", user=" + user + ", startDate=" + startDate + ", endDate=" + endDate + ", leaveType=" + leaveType + ", status=" + status + ", daysCount=" + daysCount + ", reason=" + reason + ", createdAt=" + createdAt + ", approvedBy=" + approvedBy + '}';
+    }
+
+}

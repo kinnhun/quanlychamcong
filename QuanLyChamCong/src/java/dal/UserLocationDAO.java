@@ -131,5 +131,17 @@ public class UserLocationDAO extends DBContext {
         }
         return false;
     }
+public boolean deleteAssignment(int userId, int locationId) {
+    String sql = "DELETE FROM user_locations WHERE user_id = ? AND location_id = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, userId);
+        ps.setInt(2, locationId);
+        return ps.executeUpdate() > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
 
 }

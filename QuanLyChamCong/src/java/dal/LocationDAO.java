@@ -77,32 +77,49 @@ public class LocationDAO extends DBContext {
         return null;
     }
 
-  public boolean update(Locations l) {
-    String sql = "UPDATE locations SET name = ?, address = ?, ip_map = ?, is_active = ? WHERE location_id = ?";
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, l.getName());
-        ps.setString(2, l.getAddress());
-        ps.setString(3, l.getIpMap());
-        ps.setBoolean(4, l.isIsActive());
-        ps.setInt(5, l.getId());
-        return ps.executeUpdate() > 0;
-    } catch (Exception e) {
-        e.printStackTrace();
+    public boolean update(Locations l) {
+        String sql = "UPDATE locations SET name = ?, address = ?, ip_map = ?, is_active = ? WHERE location_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, l.getName());
+            ps.setString(2, l.getAddress());
+            ps.setString(3, l.getIpMap());
+            ps.setBoolean(4, l.isIsActive());
+            ps.setInt(5, l.getId());
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
-    return false;
-}
 
-  public boolean toggleActiveStatus(int id, boolean isActive) {
-    String sql = "UPDATE locations SET is_active = ? WHERE location_id = ?";
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setBoolean(1, isActive);
-        ps.setInt(2, id);
-        return ps.executeUpdate() > 0;
-    } catch (Exception e) {
-        e.printStackTrace();
+    public boolean toggleActiveStatus(int id, boolean isActive) {
+        String sql = "UPDATE locations SET is_active = ? WHERE location_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setBoolean(1, isActive);
+            ps.setInt(2, id);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
-    return false;
-}
 
+    public Locations getLocationById(int id) {
+        String sql = "SELECT * FROM locations WHERE location_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Locations l = new Locations();
+                l.setId(rs.getInt("location_id"));
+                l.setName(rs.getString("name"));
+                l.setAddress(rs.getString("address"));
+                return l;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

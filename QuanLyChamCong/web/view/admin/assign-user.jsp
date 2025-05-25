@@ -117,10 +117,11 @@
                                                 <td><fmt:formatDate value="${row[4]}" pattern="dd/MM/yyyy HH:mm"/></td>
                                                 <td>
                                                     <form action="${pageContext.request.contextPath}/admin/delete-assignment" method="post" style="display:inline;">
-                                                        <input type="hidden" name="userId" value="${row[5]}" />
-                                                        <input type="hidden" name="locationId" value="${row[6]}" />
-                                                        <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
-                                                    </form>
+    <input type="hidden" name="userId" value="${row[5]}" />
+    <input type="hidden" name="locationId" value="${row[6]}" />
+    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa phân công này?');">Xóa</button>
+</form>
+
                                                 </td>
                                             </tr>
                                         </c:forEach>

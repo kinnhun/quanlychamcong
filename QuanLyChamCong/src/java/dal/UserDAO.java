@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import model.Users;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDAO extends DBContext {
 
@@ -140,5 +142,82 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
     }
+
+    public List<Users> getAllUsers() {
+        List<Users> list = new ArrayList<>();
+        String sql = "SELECT * FROM users ORDER BY created_at DESC";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Users u = new Users();
+                u.setUserId(rs.getInt("user_id"));
+                u.setUsername(rs.getString("username"));
+                u.setFullName(rs.getString("full_name"));
+                u.setEmail(rs.getString("email"));
+                u.setPhone(rs.getString("phone"));
+                u.setRole(rs.getString("role"));
+                u.setStatus(rs.getString("status"));
+                u.setCreatedAt(rs.getTimestamp("created_at"));
+                list.add(u);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+public boolean isUsernameExists(String username) {
+    String sql = "SELECT 1 FROM users WHERE username = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, username);
+        return ps.executeQuery().next();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
+public boolean isEmailExists(String email) {
+    String sql = "SELECT 1 FROM users WHERE email = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, email);
+        return ps.executeQuery().next();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
+public boolean isPhoneExists(String phone) {
+    String sql = "SELECT 1 FROM users WHERE phone = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, phone);
+        return ps.executeQuery().next();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+public boolean insertUser(Users user) {
+    String sql = "INSERT INTO users (username, password_hash, full_name, email, phone, role, status, created_at) "
+               + "VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE())";
+    try (Connection conn = new DBContext().getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setString(1, user.getUsername());
+        ps.setString(2, user.getPasswordHash());
+        ps.setString(3, user.getFullName());
+        ps.setString(4, user.getEmail());
+        ps.setString(5, user.getPhone());
+        ps.setString(6, user.getRole());
+        ps.setString(7, user.getStatus());
+
+        return ps.executeUpdate() > 0;
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    }
+}
+
 
 }

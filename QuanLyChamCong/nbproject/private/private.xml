@@ -3,9 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/koro3/hung/quanlychamcong/QuanLyChamCong/web/view/admin/blank.jsp</file>
-            <file>file:/D:/koro3/hung/quanlychamcong/QuanLyChamCong/web/view/admin/user-list.jsp</file>
-            <file>file:/D:/koro3/hung/quanlychamcong/QuanLyChamCong/web/view/compomnt/header.jsp</file>
+            <file>file:/D:/koro3/hung/quanlychamcong/QuanLyChamCong/src/java/model/Attendance.java</file>
+            <file>file:/D:/koro3/hung/quanlychamcong/QuanLyChamCong/web/view/user/attendance.jsp</file>
+            <file>file:/D:/koro3/hung/quanlychamcong/QuanLyChamCong/src/java/dal/AttendanceDAO.java</file>
+            <file>file:/D:/koro3/hung/quanlychamcong/QuanLyChamCong/src/java/controller/AttendanceController.java</file>
+            <file>file:/D:/koro3/hung/quanlychamcong/QuanLyChamCong/src/java/utils/Base64ImageUtil.java</file>
         </group>
     </open-files>
 </project-private>

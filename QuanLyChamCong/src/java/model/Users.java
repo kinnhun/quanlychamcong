@@ -21,6 +21,7 @@ public class Users {
     private String employmentType;
     private String status;
     private Timestamp createdAt;
+    private String banReason;
 
     public Users() {
     }
@@ -37,6 +38,22 @@ public class Users {
         this.status = status;
         this.createdAt = createdAt;
     }
+
+    public Users(int userId, String username, String passwordHash, String fullName, String email, String phone, String role, String employmentType, String status, Timestamp createdAt, String banReason) {
+        this.userId = userId;
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.role = role;
+        this.employmentType = employmentType;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.banReason = banReason;
+    }
+
+   
 
     public int getUserId() {
         return userId;
@@ -118,11 +135,21 @@ public class Users {
         this.createdAt = createdAt;
     }
 
+    public String getBanReason() {
+        return banReason;
+    }
+
+    public void setBanReason(String banReason) {
+        this.banReason = banReason;
+    }
+
     @Override
     public String toString() {
-        return "Users{" + "userId=" + userId + ", username=" + username + ", passwordHash=" + passwordHash + ", fullName=" + fullName + ", email=" + email + ", phone=" + phone + ", role=" + role + ", employmentType=" + employmentType + ", status=" + status + ", createdAt=" + createdAt + '}';
+        return "Users{" + "userId=" + userId + ", username=" + username + ", passwordHash=" + passwordHash + ", fullName=" + fullName + ", email=" + email + ", phone=" + phone + ", role=" + role + ", employmentType=" + employmentType + ", status=" + status + ", createdAt=" + createdAt + ", banReason=" + banReason + '}';
     }
-    
+
+ 
+
     
     
 }

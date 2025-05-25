@@ -52,6 +52,7 @@
                                                     <th>Vai trò</th>
                                                     <th>Trạng thái</th>
                                                     <th>Ngày tạo</th>
+                                                    <th>Hành động</th>
                                                 </tr>
 
                                             </thead>
@@ -74,6 +75,26 @@
                                                             </span>
                                                         </td>
                                                         <td><fmt:formatDate value="${u.createdAt}" pattern="dd/MM/yyyy HH:mm"/></td>
+                                                        <td>
+                                                            <c:choose>
+                                                                <c:when test="${u.status == 'banned'}">
+                                                                    <a href="${pageContext.request.contextPath}/admin/user-unban?userId=${u.userId}"
+                                                                       class="btn btn-sm btn-success"
+                                                                       onclick="return confirm('Bạn có muốn mở khóa tài khoản này không?');">
+                                                                        Unban
+                                                                    </a>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <a href="${pageContext.request.contextPath}/admin/user-ban?userId=${u.userId}"
+                                                                       class="btn btn-sm btn-danger"
+                                                                       onclick="return confirm('Bạn có chắc chắn muốn ban tài khoản này không?');">
+                                                                        Ban
+                                                                    </a>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </td>
+
+
                                                     </tr>
                                                 </c:forEach>
                                             </tbody>

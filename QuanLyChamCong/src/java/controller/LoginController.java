@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package conntroller;
+package controller;
 
+import dal.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -11,9 +12,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import model.Users;
 
-@WebServlet(name = "ClearMessageController", urlPatterns = {"/clear-message"})
-public class ClearMessageController extends HttpServlet {
+@WebServlet(name = "LoginController", urlPatterns = {"/login"})
+public class LoginController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -32,10 +35,10 @@ public class ClearMessageController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ClearMessageController</title>");
+            out.println("<title>Servlet LoginController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ClearMessageController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet LoginController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -53,7 +56,7 @@ public class ClearMessageController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.getRequestDispatcher("view/user/Login.jsp").forward(request, response);
     }
 
     /**
@@ -67,10 +70,29 @@ public class ClearMessageController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getSession().removeAttribute("message");
-        request.getSession().removeAttribute("error");
-        request.removeAttribute("message");
-        request.removeAttribute("error");
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        UserDAO userDAO = new UserDAO();
+        Users user = userDAO.login(username, password);
+
+        if (user != null) {
+            HttpSession session = request.getSession();
+            session.setAttribute("user", user);
+            session.setAttribute("message", "Đăng nhập thành công!");
+
+            if (user.getRole().equals("admin")) {
+                response.sendRedirect("admin-dashboard");
+            } else if (user.getRole().equals("manager")) {
+                response.sendRedirect("manager-dashboard");
+            } else {
+                response.sendRedirect("employee-dashboard");
+            }
+        } else {
+            request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu.");
+            doGet(request, response);
+            return;
+        }
     }
 
     /**

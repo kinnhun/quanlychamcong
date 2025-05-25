@@ -44,7 +44,7 @@
                     <h2 class="mt-3 text-center">Đăng nhập</h2>
                     <p class="text-center">Nhập tài khoản và mật khẩu để tiếp tục</p>
 
-                    <!-- Import thông báo nổi -->
+                    <!-- Thông báo lỗi/thành công -->
                     <c:import url="/view/compomnt/notification.jsp"/>
 
                     <!-- Login Form -->
@@ -70,9 +70,23 @@
                                 <button type="submit" class="btn btn-block btn-dark">Đăng nhập</button>
                             </div>
 
-                            <div class="col-lg-12 text-center mt-3">
-                                Chưa có tài khoản?
-                                <a href="${pageContext.request.contextPath}/view/user/Register.jsp" class="text-primary">Đăng ký</a>
+                            <!-- Google Login -->
+                            <div class="col-lg-12 text-center mt-4">
+                                <div id="g_id_onload"
+                                     data-client_id="20495276859-asgm8cn4636ehlrsktoc6klk7ldujrp5.apps.googleusercontent.com"
+                                     data-login_uri="http://localhost:9999/QuanLyChamCong/oauth2handler"
+                                     data-auto_prompt="false"
+                                     data-ux_mode="redirect">
+                                </div>
+
+                                <div class="g_id_signin"
+                                     data-type="standard"
+                                     data-shape="rectangular"
+                                     data-theme="outline"
+                                     data-text="signin_with"
+                                     data-size="large"
+                                     data-logo_alignment="left">
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -82,10 +96,11 @@
     </div>
 </div>
 
-<!-- JS Scripts -->
+<!-- JS -->
 <script src="${pageContext.request.contextPath}/view/lib/assets/libs/jquery/dist/jquery.min.js"></script>
 <script src="${pageContext.request.contextPath}/view/lib/assets/libs/popper.js/dist/umd/popper.min.js"></script>
 <script src="${pageContext.request.contextPath}/view/lib/assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
     $(".preloader").fadeOut();
 </script>

@@ -8,7 +8,7 @@ public class EmailUtils {
 
     public static boolean sendEmail(String to, String subject, String content) {
         final String fromEmail = "trungkien2981412@gmail.com"; // Gmail bạn
-        final String appPassword = "qddl geok ebnu atpb";  // Mật khẩu ứng dụng Gmail
+        final String appPassword = "jssa nrmt rbwm jphj";  // Mật khẩu ứng dụng Gmail
 
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");

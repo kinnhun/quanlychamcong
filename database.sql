@@ -123,3 +123,5 @@ CREATE TABLE password_reset_tokens (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
+ALTER TABLE users
+ADD ban_reason NVARCHAR(255);

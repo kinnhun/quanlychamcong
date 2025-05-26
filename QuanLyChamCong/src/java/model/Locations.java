@@ -9,27 +9,29 @@ package model;
  * @author kinkin
  */
 public class Locations {
-     private int locationId;
+    private int id;
     private String name;
     private String address;
+    private String ipMap;
     private boolean isActive;
 
     public Locations() {
     }
 
-    public Locations(int locationId, String name, String address, boolean isActive) {
-        this.locationId = locationId;
+    public Locations(int id, String name, String address, String ipMap, boolean isActive) {
+        this.id = id;
         this.name = name;
         this.address = address;
+        this.ipMap = ipMap;
         this.isActive = isActive;
     }
 
-    public int getLocationId() {
-        return locationId;
+    public int getId() {
+        return id;
     }
 
-    public void setLocationId(int locationId) {
-        this.locationId = locationId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -48,6 +50,14 @@ public class Locations {
         this.address = address;
     }
 
+    public String getIpMap() {
+        return ipMap;
+    }
+
+    public void setIpMap(String ipMap) {
+        this.ipMap = ipMap;
+    }
+
     public boolean isIsActive() {
         return isActive;
     }
@@ -58,8 +68,10 @@ public class Locations {
 
     @Override
     public String toString() {
-        return "Locations{" + "locationId=" + locationId + ", name=" + name + ", address=" + address + ", isActive=" + isActive + '}';
+        return "Locations{" + "id=" + id + ", name=" + name + ", address=" + address + ", ipMap=" + ipMap + ", isActive=" + isActive + '}';
     }
+    
+    
 
     
 }

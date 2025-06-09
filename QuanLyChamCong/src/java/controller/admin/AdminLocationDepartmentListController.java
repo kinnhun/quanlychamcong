@@ -1,9 +1,6 @@
 package controller.admin;
 
-import DAO.LocationDepartmentDAO;
-import Model.LocationDepartment;
-import Model.Department;
-import Model.Location;
+
 import dal.LocationDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,8 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import model.Department;
-import model.LocationDepartment;
+import model.Departments;
+import model.LocationDepartments;
 import model.Locations;
 
 @WebServlet(name = "AdminLocationDepartmentListController", urlPatterns = {"/admin/location-departments"})
@@ -28,12 +25,12 @@ public class AdminLocationDepartmentListController extends HttpServlet {
 
         LocationDAO locationDao = new LocationDAO();
         
-        // Lấy danh sách LocationDepartment
-        List<LocationDepartment> locationDepartments = locationDao.getAllLocationDepartments();
+        // Lấy danh sách LocationDepartments
+        List<LocationDepartments> locationDepartments = locationDao.getAllLocationDepartments();
 
-        // Lấy danh sách Location và Department để hiển thị
+        // Lấy danh sách Location và Departments để hiển thị
         List<Locations> locations = locationDao.getAllLocations();
-        List<Department> departments = locationDao.getAllDepartments();
+        List<Departments> departments = locationDao.getAllDepartments();
 
         // Đẩy dữ liệu sang JSP
         request.setAttribute("locationDepartments", locationDepartments);

@@ -6,7 +6,7 @@ package model;
 
 import java.util.Date;
 
-public class Department {
+public class Departments {
 
     private int departmentId;
     private String departmentName;
@@ -14,10 +14,10 @@ public class Department {
     private String description;
     private Date createdAt;
 
-    public Department() {
+    public Departments() {
     }
 
-    public Department(int departmentId, String departmentName, String departmentCode, String description, Date createdAt) {
+    public Departments(int departmentId, String departmentName, String departmentCode, String description, Date createdAt) {
         this.departmentId = departmentId;
         this.departmentName = departmentName;
         this.departmentCode = departmentCode;

@@ -9,8 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import model.Department;
-import model.LocationDepartment;
+import model.Departments;
+import model.LocationDepartments;
 import model.Locations;
 
 public class LocationDAO extends DBContext {
@@ -124,18 +124,18 @@ public class LocationDAO extends DBContext {
         return null;
     }
 
-    public List<LocationDepartment> getAllLocationDepartments() {
-        List<LocationDepartment> list = new ArrayList<>();
+    public List<LocationDepartments> getAllLocationDepartments() {
+        List<LocationDepartments> list = new ArrayList<>();
         String sql = "SELECT location_id, department_id FROM location_departments";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                LocationDepartment ld = new LocationDepartment();
+                LocationDepartments ld = new LocationDepartments();
                 LocationDAO ldao = new LocationDAO();
                 Locations location = ldao.getById(rs.getInt("location_id"));
                 ld.setLocationId(location);
 
-                Department department = ldao.getDepartmentById(rs.getInt("department_id"));
+                Departments department = ldao.getDepartmentById(rs.getInt("department_id"));
                 ld.setDepartmentId(department);
                 list.add(ld);
             }
@@ -165,13 +165,13 @@ public class LocationDAO extends DBContext {
         return list;
     }
 
-    public List<Department> getAllDepartments() {
-        List<Department> list = new ArrayList<>();
+    public List<Departments> getAllDepartments() {
+        List<Departments> list = new ArrayList<>();
         String sql = "SELECT * FROM departments";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Department d = new Department();
+                Departments d = new Departments();
                 d.setDepartmentId(rs.getInt("department_id"));
                 d.setDepartmentName(rs.getString("department_name"));
                 d.setDepartmentCode(rs.getString("department_code"));
@@ -185,13 +185,13 @@ public class LocationDAO extends DBContext {
         return list;
     }
 
-  public Department getDepartmentById(int departmentId) {
+  public Departments getDepartmentById(int departmentId) {
     String sql = "SELECT * FROM departments WHERE department_id = ?";
     try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
         ps.setInt(1, departmentId);
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
-            Department d = new Department();
+            Departments d = new Departments();
             d.setDepartmentId(rs.getInt("department_id"));
             d.setDepartmentName(rs.getString("department_name"));
             d.setDepartmentCode(rs.getString("department_code"));

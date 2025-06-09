@@ -4,15 +4,15 @@
  */
 package model;
 
-public class LocationDepartment {
+public class LocationDepartments {
 
     private Locations locationId;
-    private Department departmentId;
+    private Departments departmentId;
 
-    public LocationDepartment() {
+    public LocationDepartments() {
     }
 
-    public LocationDepartment(Locations locationId, Department departmentId) {
+    public LocationDepartments(Locations locationId, Departments departmentId) {
         this.locationId = locationId;
         this.departmentId = departmentId;
     }
@@ -25,11 +25,11 @@ public class LocationDepartment {
         this.locationId = locationId;
     }
 
-    public Department getDepartmentId() {
+    public Departments getDepartmentId() {
         return departmentId;
     }
 
-    public void setDepartmentId(Department departmentId) {
+    public void setDepartmentId(Departments departmentId) {
         this.departmentId = departmentId;
     }
 

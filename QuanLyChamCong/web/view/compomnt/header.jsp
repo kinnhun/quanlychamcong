@@ -13,6 +13,29 @@
         <link href="${pageContext.request.contextPath}/view/lib/assets/extra-libs/c3/c3.min.css" rel="stylesheet">
         <link href="${pageContext.request.contextPath}/view/lib/assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
         <link href="${pageContext.request.contextPath}/view/lib/dist/css/style.min.css" rel="stylesheet">
+        <style>
+            /* Căn search box sang phải */
+            div.dataTables_filter {
+                float: right !important;
+                text-align: right;
+            }
+
+            /* Căn phân trang sang phải */
+            div.dataTables_paginate {
+                float: right !important;
+                text-align: right;
+            }
+
+            /* Căn "Show entries" sang trái (tuỳ chọn) */
+            div.dataTables_length {
+                float: left !important;
+            }
+
+            /* Tăng khoảng cách giữa các control nếu cần */
+            .dataTables_wrapper .dataTables_filter input {
+                margin-left: 0.5rem;
+            }
+        </style>
     </head>
     <body>
 
@@ -159,12 +182,12 @@
                                 <img src="./avata.png" alt="user" class="rounded-circle"
                                      width="40">
                                 <span class="ml-2 d-none d-lg-inline-block"><span>Hello,</span> <span
-                                        class="text-dark">Jason Doe</span> <i data-feather="chevron-down"
+                                        class="text-dark">${sessionScope.user.fullName}</span> <i data-feather="chevron-down"
                                         class="svg-icon"></i></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right user-dd animated flipInY">
-                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="user"
-                                                                                      class="svg-icon mr-2 ml-1"></i>
+                                <a class="dropdown-item" href="${pageContext.request.contextPath}/profile"><i data-feather="user"
+                                                                                                              class="svg-icon mr-2 ml-1"></i>
                                     My Profile</a>
                                 <a class="dropdown-item" href="javascript:void(0)"><i data-feather="credit-card"
                                                                                       class="svg-icon mr-2 ml-1"></i>
@@ -177,8 +200,8 @@
                                                                                       class="svg-icon mr-2 ml-1"></i>
                                     Account Setting</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="power"
-                                                                                      class="svg-icon mr-2 ml-1"></i>
+                                <a class="dropdown-item" href="${pageContext.request.contextPath}/logout"><i data-feather="power"
+                                                                                                             class="svg-icon mr-2 ml-1"></i>
                                     Logout</a>
                                 <div class="dropdown-divider"></div>
                                 <div class="pl-4 p-3"><a href="javascript:void(0)" class="btn btn-sm btn-info">View

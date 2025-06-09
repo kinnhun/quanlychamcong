@@ -314,50 +314,67 @@ public class UserDAO extends DBContext {
     }
 
     public List<Users> searchEmployees(String locationId, String role, String status, String keyword) {
-    List<Users> list = new ArrayList<>();
-    StringBuilder sql = new StringBuilder("SELECT * FROM users WHERE 1=1");
+        List<Users> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM users WHERE 1=1");
 
-    List<Object> params = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
 
-    if (role != null && !role.isEmpty()) {
-        sql.append(" AND role = ?");
-        params.add(role);
-    }
-    if (status != null && !status.isEmpty()) {
-        sql.append(" AND status = ?");
-        params.add(status);
-    }
-    if (keyword != null && !keyword.trim().isEmpty()) {
-        sql.append(" AND (full_name LIKE ? OR email LIKE ? OR username LIKE ?)");
-        String like = "%" + keyword + "%";
-        params.add(like);
-        params.add(like);
-        params.add(like);
-    }
-
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-        for (int i = 0; i < params.size(); i++) {
-            ps.setObject(i + 1, params.get(i));
+        if (role != null && !role.isEmpty()) {
+            sql.append(" AND role = ?");
+            params.add(role);
+        }
+        if (status != null && !status.isEmpty()) {
+            sql.append(" AND status = ?");
+            params.add(status);
+        }
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (full_name LIKE ? OR email LIKE ? OR username LIKE ?)");
+            String like = "%" + keyword + "%";
+            params.add(like);
+            params.add(like);
+            params.add(like);
         }
 
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            Users u = new Users();
-            u.setUserId(rs.getInt("user_id"));
-            u.setUsername(rs.getString("username"));
-            u.setFullName(rs.getString("full_name"));
-            u.setEmail(rs.getString("email"));
-            u.setPhone(rs.getString("phone"));
-            u.setRole(rs.getString("role"));
-            u.setStatus(rs.getString("status"));
-            u.setCreatedAt(rs.getTimestamp("created_at"));
-            list.add(u);
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Users u = new Users();
+                u.setUserId(rs.getInt("user_id"));
+                u.setUsername(rs.getString("username"));
+                u.setFullName(rs.getString("full_name"));
+                u.setEmail(rs.getString("email"));
+                u.setPhone(rs.getString("phone"));
+                u.setRole(rs.getString("role"));
+                u.setStatus(rs.getString("status"));
+                u.setCreatedAt(rs.getTimestamp("created_at"));
+                list.add(u);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        return list;
+    }
+
+public boolean updateUser1(int userId, String fullName, String email, String phone) {
+    String sql = "UPDATE users SET full_name = ?, email = ?, phone = ? WHERE user_id = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setString(1, fullName);
+        ps.setString(2, email);
+        ps.setString(3, phone);
+        ps.setInt(4, userId);
+
+        return ps.executeUpdate() > 0;
+
     } catch (Exception e) {
         e.printStackTrace();
+        return false;
     }
-
-    return list;
 }
 
 }

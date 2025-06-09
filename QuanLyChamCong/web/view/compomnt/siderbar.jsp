@@ -22,6 +22,8 @@
             <div class="scroll-sidebar" data-sidebarbg="skin6">
                 <nav class="sidebar-nav">
                     <ul id="sidebarnav">
+                        
+                        <p>Admin</p>
                         <li class="sidebar-item">
                             <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/admin/dashboard.jsp">
                                 <i data-feather="home" class="feather-icon"></i>
@@ -46,6 +48,46 @@
                                 <span class="hide-menu">Phân công nhân viên</span>
                             </a>
                         </li>
+                        
+                        <p>Manager</p>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/manager/leave-requests">
+                                <i data-feather="file-text" class="feather-icon"></i>
+                                <span class="hide-menu">Quản lý đơn xin nghỉ</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+    <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/manager/leave-config">
+        <i data-feather="settings" class="feather-icon"></i>
+        <span class="hide-menu">Cấu hình ngày phép</span>
+    </a>
+</li>
+<li class="sidebar-item">
+    <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/manager/leave-types">
+        <i data-feather="tag" class="feather-icon"></i>
+        <span class="hide-menu">Loại nghỉ phép</span>
+    </a>
+</li>
+
+
+                        
+                        
+                        <p>Employee</p>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/employee/leave-request-create">
+                                <i data-feather="file-plus" class="feather-icon"></i>
+                                <span class="hide-menu">Tạo đơn nghỉ</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/employee/leave-requests">
+                                <i data-feather="list" class="feather-icon"></i>
+                                <span class="hide-menu">Danh sách đơn</span>
+                            </a>
+                        </li>
+
+
 
                         <li class="sidebar-item">
                             <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/attendance">

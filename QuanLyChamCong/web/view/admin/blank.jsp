@@ -20,26 +20,26 @@
             <c:import url="/view/compomnt/siderbar.jsp" />
 
             <div class="page-wrapper">
- <div class="container-fluid">
-                <!-- Thông báo -->
-                <c:import url="/view/compomnt/notification.jsp" />
+                <div class="container-fluid">
+                    <!-- Thông báo -->
+                    <c:import url="/view/compomnt/notification.jsp" />
 
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                       </div>   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>   
 
             </div>   
         </div>

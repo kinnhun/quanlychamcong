@@ -4,8 +4,9 @@
  */
 package model;
 
-import io.opencensus.common.Timestamp;
-import java.util.Date;
+import java.sql.Timestamp;
+import java.sql.Date;
+import java.util.List;
 
 public class LeaveRequest {
 
@@ -13,27 +14,40 @@ public class LeaveRequest {
     private Users user;
     private Date startDate;
     private Date endDate;
-    private String leaveType;
+    private LeaveType leaveTypeId;
     private String status;
     private int daysCount;
     private String reason;
     private Timestamp createdAt;
     private Users approvedBy;
+    private String approveComment;
+
+    private List<Locations> locations;
 
     public LeaveRequest() {
     }
 
-    public LeaveRequest(int requestId, Users user, Date startDate, Date endDate, String leaveType, String status, int daysCount, String reason, Timestamp createdAt, Users approvedBy) {
+    public LeaveRequest(int requestId, Users user, Date startDate, Date endDate, LeaveType leaveTypeId, String status, int daysCount, String reason, Timestamp createdAt, Users approvedBy, String approveComment, List<Locations> locations) {
         this.requestId = requestId;
         this.user = user;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.leaveType = leaveType;
+        this.leaveTypeId = leaveTypeId;
         this.status = status;
         this.daysCount = daysCount;
         this.reason = reason;
         this.createdAt = createdAt;
         this.approvedBy = approvedBy;
+        this.approveComment = approveComment;
+        this.locations = locations;
+    }
+
+    public List<Locations> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(List<Locations> locations) {
+        this.locations = locations;
     }
 
     public int getRequestId() {
@@ -68,12 +82,12 @@ public class LeaveRequest {
         this.endDate = endDate;
     }
 
-    public String getLeaveType() {
-        return leaveType;
+    public LeaveType getLeaveTypeId() {
+        return leaveTypeId;
     }
 
-    public void setLeaveType(String leaveType) {
-        this.leaveType = leaveType;
+    public void setLeaveTypeId(LeaveType leaveTypeId) {
+        this.leaveTypeId = leaveTypeId;
     }
 
     public String getStatus() {
@@ -116,9 +130,17 @@ public class LeaveRequest {
         this.approvedBy = approvedBy;
     }
 
+    public String getApproveComment() {
+        return approveComment;
+    }
+
+    public void setApproveComment(String approveComment) {
+        this.approveComment = approveComment;
+    }
+
     @Override
     public String toString() {
-        return "LeaveRequest{" + "requestId=" + requestId + ", user=" + user + ", startDate=" + startDate + ", endDate=" + endDate + ", leaveType=" + leaveType + ", status=" + status + ", daysCount=" + daysCount + ", reason=" + reason + ", createdAt=" + createdAt + ", approvedBy=" + approvedBy + '}';
+        return "LeaveRequest{" + "requestId=" + requestId + ", user=" + user + ", startDate=" + startDate + ", endDate=" + endDate + ", leaveTypeId=" + leaveTypeId + ", status=" + status + ", daysCount=" + daysCount + ", reason=" + reason + ", createdAt=" + createdAt + ", approvedBy=" + approvedBy + ", approveComment=" + approveComment + ", locations=" + locations + '}';
     }
 
 }

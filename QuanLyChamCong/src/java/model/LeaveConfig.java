@@ -2,28 +2,28 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 package model;
 
-
 public class LeaveConfig {
- private int configId;
+
+    private int configId;
     private int year;
-    private String leaveType;
     private int defaultDays;
     private Users createdBy;
+    private LeaveType leaveTypeId;
+
 
     public LeaveConfig() {
     }
 
-    public LeaveConfig(int configId, int year, String leaveType, int defaultDays, Users createdBy) {
+    public LeaveConfig(int configId, int year, int defaultDays, Users createdBy, LeaveType leaveTypeId) {
         this.configId = configId;
         this.year = year;
-        this.leaveType = leaveType;
         this.defaultDays = defaultDays;
         this.createdBy = createdBy;
+        this.leaveTypeId = leaveTypeId;
     }
-    
+
 
     public int getConfigId() {
         return configId;
@@ -41,13 +41,15 @@ public class LeaveConfig {
         this.year = year;
     }
 
-    public String getLeaveType() {
-        return leaveType;
+    public LeaveType getLeaveTypeId() {
+        return leaveTypeId;
     }
 
-    public void setLeaveType(String leaveType) {
-        this.leaveType = leaveType;
+    public void setLeaveTypeId(LeaveType leaveTypeId) {
+        this.leaveTypeId = leaveTypeId;
     }
+
+   
 
     public int getDefaultDays() {
         return defaultDays;
@@ -67,7 +69,9 @@ public class LeaveConfig {
 
     @Override
     public String toString() {
-        return "LeaveConfig{" + "configId=" + configId + ", year=" + year + ", leaveType=" + leaveType + ", defaultDays=" + defaultDays + ", createdBy=" + createdBy + '}';
+        return "LeaveConfig{" + "configId=" + configId + ", year=" + year + ", defaultDays=" + defaultDays + ", createdBy=" + createdBy + ", leaveTypeId=" + leaveTypeId + '}';
     }
-    
+
+ 
+
 }

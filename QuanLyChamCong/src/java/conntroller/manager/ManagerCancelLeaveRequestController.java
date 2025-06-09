@@ -6,9 +6,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Users;
 import java.io.IOException;
+import java.util.Set;
 
 @WebServlet(name = "ManagerCancelLeaveRequestController", urlPatterns = {"/manager/leave-requests-cancel"})
 public class ManagerCancelLeaveRequestController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -23,16 +25,18 @@ public class ManagerCancelLeaveRequestController extends HttpServlet {
             }
 
             int requestId = Integer.parseInt(idRaw);
-            Users manager = (Users) request.getSession().getAttribute("user");
+            Users approver = (Users) request.getSession().getAttribute("user");
 
-            if (manager == null || !"manager".equals(manager.getRole())) {
-                request.getSession().setAttribute("error", "Bạn không có quyền thực hiện thao tác này.");
+            Set<String> allowedRoles = Set.of("manager", "admin");
+
+            if (approver == null || !allowedRoles.contains(approver.getRole())) {
+                request.getSession().setAttribute("error", "Bạn không có quyền duyệt đơn.");
                 response.sendRedirect(request.getContextPath() + "/manager/leave-requests");
                 return;
             }
 
             LeaveRequestDAO dao = new LeaveRequestDAO();
-            dao.cancelRequest(requestId, manager.getUserId(), note);
+            dao.cancelRequest(requestId, approver.getUserId(), note);
 
             request.getSession().setAttribute("message", "Đã hủy đơn #" + requestId);
             response.sendRedirect(request.getContextPath() + "/manager/leave-requests");

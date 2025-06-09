@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import model.Department;
+import model.LocationDepartment;
 import model.Locations;
 
 public class LocationDAO extends DBContext {
@@ -121,5 +123,87 @@ public class LocationDAO extends DBContext {
         }
         return null;
     }
+
+    public List<LocationDepartment> getAllLocationDepartments() {
+        List<LocationDepartment> list = new ArrayList<>();
+        String sql = "SELECT location_id, department_id FROM location_departments";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                LocationDepartment ld = new LocationDepartment();
+                LocationDAO ldao = new LocationDAO();
+                Locations location = ldao.getById(rs.getInt("location_id"));
+                ld.setLocationId(location);
+
+                Department department = ldao.getDepartmentById(rs.getInt("department_id"));
+                ld.setDepartmentId(department);
+                list.add(ld);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Locations> getAllLocations() {
+        List<Locations> list = new ArrayList<>();
+        String sql = "SELECT * FROM locations";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Locations l = new Locations();
+                l.setId(rs.getInt("location_id"));
+                l.setName(rs.getString("name"));
+                l.setAddress(rs.getString("address"));
+                l.setIsActive(rs.getBoolean("is_active"));
+                l.setIpMap(rs.getString("ip_map"));
+                list.add(l);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Department> getAllDepartments() {
+        List<Department> list = new ArrayList<>();
+        String sql = "SELECT * FROM departments";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Department d = new Department();
+                d.setDepartmentId(rs.getInt("department_id"));
+                d.setDepartmentName(rs.getString("department_name"));
+                d.setDepartmentCode(rs.getString("department_code"));
+                d.setDescription(rs.getString("description"));
+                d.setCreatedAt(rs.getTimestamp("created_at"));
+                list.add(d);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+  public Department getDepartmentById(int departmentId) {
+    String sql = "SELECT * FROM departments WHERE department_id = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, departmentId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Department d = new Department();
+            d.setDepartmentId(rs.getInt("department_id"));
+            d.setDepartmentName(rs.getString("department_name"));
+            d.setDepartmentCode(rs.getString("department_code"));
+            d.setDescription(rs.getString("description"));
+            d.setCreatedAt(rs.getTimestamp("created_at"));
+            return d;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null; 
+}
+
 
 }

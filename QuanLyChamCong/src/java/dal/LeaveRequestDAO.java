@@ -138,7 +138,7 @@ public class LeaveRequestDAO extends DBContext {
     }
 
     public void approveRequest(int requestId, int approverId, String note) {
-        String sql = "UPDATE leave_requests SET status = 'approved', approved_by = ?, approve_note = ? WHERE request_id = ?";
+        String sql = "UPDATE leave_requests SET status = 'approved', approved_by = ?, approve_comment = ? WHERE request_id = ?";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, approverId);
             ps.setString(2, note);

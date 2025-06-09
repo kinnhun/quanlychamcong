@@ -103,18 +103,22 @@
                                         </td>
                                         <td><fmt:formatDate value="${r.createdAt}" pattern="dd/MM/yyyy HH:mm" /></td>
                                         <td>
-                                            <div class="d-flex justify-content-center gap-1">
-                                                <button class="btn btn-outline-success btn-sm approve-btn px-2 py-1" data-id="${r.requestId}" title="Phê duyệt">
-                                                    ✅
-                                                </button>
-                                                <button class="btn btn-outline-danger btn-sm reject-btn px-2 py-1" data-id="${r.requestId}" title="Từ chối">
-                                                    ❌
-                                                </button>
-                                                <button class="btn btn-outline-secondary btn-sm cancel-btn px-2 py-1" data-id="${r.requestId}" title="Hủy">
-                                                    🚫
-                                                </button>
-                                            </div>
+                                            <c:if test="${r.status == 'pending'}">
+                                                <div class="d-flex justify-content-center gap-1">
+                                                    <button class="btn btn-outline-success btn-sm approve-btn px-2 py-1" data-id="${r.requestId}" title="Phê duyệt">
+                                                        ✅
+                                                    </button>
+                                                    <button class="btn btn-outline-danger btn-sm reject-btn px-2 py-1" data-id="${r.requestId}" title="Từ chối">
+                                                        ❌
+                                                    </button>
+                                                    <button class="btn btn-outline-secondary btn-sm cancel-btn px-2 py-1" data-id="${r.requestId}" title="Hủy">
+                                                        🚫
+                                                    </button>
+                                                </div>
+                                            </c:if>
                                         </td>
+
+
                                     </tr>
                                 </c:forEach>
                             </tbody>

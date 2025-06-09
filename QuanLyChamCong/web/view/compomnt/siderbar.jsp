@@ -25,7 +25,7 @@
                         
                         <p>Admin</p>
                         <li class="sidebar-item">
-                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/admin/dashboard.jsp">
+                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/admin/dashboard">
                                 <i data-feather="home" class="feather-icon"></i>
                                 <span class="hide-menu">Dashboard</span>
                             </a>

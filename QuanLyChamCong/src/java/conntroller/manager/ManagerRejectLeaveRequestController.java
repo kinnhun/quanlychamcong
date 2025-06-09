@@ -9,12 +9,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.Users;
 
 import java.io.IOException;
+import java.util.Set;
+
 @WebServlet(name = "ManagerRejectLeaveRequestController", urlPatterns = {"/manager/leave-requests-reject"})
 public class ManagerRejectLeaveRequestController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
         try {
             String idRaw = request.getParameter("id");
             String note = request.getParameter("note");
@@ -28,8 +30,10 @@ public class ManagerRejectLeaveRequestController extends HttpServlet {
             int requestId = Integer.parseInt(idRaw);
             Users approver = (Users) request.getSession().getAttribute("user");
 
-            if (approver == null || !"manager".equals(approver.getRole())) {
-                request.getSession().setAttribute("error", "Bạn không có quyền từ chối đơn.");
+            Set<String> allowedRoles = Set.of("manager", "admin");
+
+            if (approver == null || !allowedRoles.contains(approver.getRole())) {
+                request.getSession().setAttribute("error", "Bạn không có quyền duyệt đơn.");
                 response.sendRedirect(request.getContextPath() + "/manager/leave-requests");
                 return;
             }

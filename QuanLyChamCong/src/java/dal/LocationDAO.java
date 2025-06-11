@@ -219,5 +219,31 @@ public boolean insertDepartments(Departments d) {
     return false;
 }
 
+  
+public boolean updateDepartment(Departments d) {
+    String sql = "UPDATE departments SET department_name = ?, department_code = ?, description = ? WHERE department_id = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, d.getDepartmentName());
+        ps.setString(2, d.getDepartmentCode());
+        ps.setString(3, d.getDescription());
+        ps.setInt(4, d.getDepartmentId());
+        return ps.executeUpdate() > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
+ public boolean deleteDepartmentById(int id) {
+    String sql = "DELETE FROM departments WHERE department_id = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, id);
+        return ps.executeUpdate() > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
 
 }

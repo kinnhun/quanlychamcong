@@ -22,6 +22,7 @@ public class AdminDepartmentsAddController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
 
         request.setCharacterEncoding("UTF-8");
 
@@ -52,7 +53,8 @@ public class AdminDepartmentsAddController extends HttpServlet {
         } else {
             boolean success = dao.insertDepartments(d);
             if (success) {
-                response.sendRedirect(request.getContextPath() + "/admin/departments?msg=success");
+                session.setAttribute("message", "Sửa thành công!");
+                response.sendRedirect(request.getContextPath() + "/admin/location-departments");
                 return;
             } else {
                 request.setAttribute("error", "Thêm phòng ban thất bại.");

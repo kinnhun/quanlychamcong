@@ -60,6 +60,8 @@
                                                             </span>
                                                         </td>
                                                         <td>
+                                                            <a href="${pageContext.request.contextPath}/admin/locations-department?locationId=${l.id}"
+                                                               class="btn btn-sm btn-info">Xem phòng ban</a>
                                                             <a href="${pageContext.request.contextPath}/admin/location-edit?id=${l.id}"
                                                                class="btn btn-sm btn-warning">Sửa</a>
                                                             <c:choose>

@@ -185,65 +185,122 @@ public class LocationDAO extends DBContext {
         return list;
     }
 
-  public Departments getDepartmentById(int departmentId) {
-    String sql = "SELECT * FROM departments WHERE department_id = ?";
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, departmentId);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            Departments d = new Departments();
-            d.setDepartmentId(rs.getInt("department_id"));
-            d.setDepartmentName(rs.getString("department_name"));
-            d.setDepartmentCode(rs.getString("department_code"));
-            d.setDescription(rs.getString("description"));
-            d.setCreatedAt(rs.getTimestamp("created_at"));
-            return d;
+    public Departments getDepartmentById(int departmentId) {
+        String sql = "SELECT * FROM departments WHERE department_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, departmentId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Departments d = new Departments();
+                d.setDepartmentId(rs.getInt("department_id"));
+                d.setDepartmentName(rs.getString("department_name"));
+                d.setDepartmentCode(rs.getString("department_code"));
+                d.setDescription(rs.getString("description"));
+                d.setCreatedAt(rs.getTimestamp("created_at"));
+                return d;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return null;
     }
-    return null; 
-}
 
-public boolean insertDepartments(Departments d) {
-    String sql = "INSERT INTO departments (department_name, department_code, description, created_at) VALUES (?, ?, ?, ?)";
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, d.getDepartmentName());
-        ps.setString(2, d.getDepartmentCode());
-        ps.setString(3, d.getDescription());
-        ps.setTimestamp(4, new java.sql.Timestamp(d.getCreatedAt().getTime()));
-        return ps.executeUpdate() > 0;
-    } catch (Exception e) {
-        e.printStackTrace();
+    public boolean insertDepartments(Departments d) {
+        String sql = "INSERT INTO departments (department_name, department_code, description, created_at) VALUES (?, ?, ?, ?)";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, d.getDepartmentName());
+            ps.setString(2, d.getDepartmentCode());
+            ps.setString(3, d.getDescription());
+            ps.setTimestamp(4, new java.sql.Timestamp(d.getCreatedAt().getTime()));
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
-    return false;
-}
 
-  
-public boolean updateDepartment(Departments d) {
-    String sql = "UPDATE departments SET department_name = ?, department_code = ?, description = ? WHERE department_id = ?";
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, d.getDepartmentName());
-        ps.setString(2, d.getDepartmentCode());
-        ps.setString(3, d.getDescription());
-        ps.setInt(4, d.getDepartmentId());
-        return ps.executeUpdate() > 0;
-    } catch (Exception e) {
-        e.printStackTrace();
+    public boolean updateDepartment(Departments d) {
+        String sql = "UPDATE departments SET department_name = ?, department_code = ?, description = ? WHERE department_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, d.getDepartmentName());
+            ps.setString(2, d.getDepartmentCode());
+            ps.setString(3, d.getDescription());
+            ps.setInt(4, d.getDepartmentId());
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
-    return false;
-}
 
- public boolean deleteDepartmentById(int id) {
-    String sql = "DELETE FROM departments WHERE department_id = ?";
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, id);
-        return ps.executeUpdate() > 0;
-    } catch (Exception e) {
-        e.printStackTrace();
+    public boolean deleteDepartmentById(int id) {
+        String sql = "DELETE FROM departments WHERE department_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
-    return false;
-}
 
+    public List<Departments> getDepartmentsByLocation(int locationId) {
+        List<Departments> list = new ArrayList<>();
+        String sql = "SELECT d.* FROM location_departments ld "
+                + "JOIN departments d ON ld.department_id = d.department_id "
+                + "WHERE ld.location_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, locationId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Departments d = new Departments();
+                d.setDepartmentId(rs.getInt("department_id"));
+                d.setDepartmentName(rs.getString("department_name"));
+                d.setDepartmentCode(rs.getString("department_code"));
+                d.setDescription(rs.getString("description"));
+                d.setCreatedAt(rs.getTimestamp("created_at"));
+                list.add(d);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Integer> getDepartmentIdsByLocation(int locationId) {
+        List<Integer> departmentIds = new ArrayList<>();
+        String sql = "SELECT department_id FROM location_departments WHERE location_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, locationId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                departmentIds.add(rs.getInt("department_id"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return departmentIds;
+    }
+
+    public void deleteDepartmentsFromLocation(int locationId) {
+        String sql = "DELETE FROM location_departments WHERE location_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, locationId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void assignDepartmentToLocation(int locationId, int depId) {
+        String sql = "INSERT INTO location_departments (location_id, department_id) VALUES (?, ?)";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, locationId);
+            ps.setInt(2, depId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

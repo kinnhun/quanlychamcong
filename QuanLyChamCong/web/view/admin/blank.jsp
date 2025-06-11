@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Danh sách tài khoản</title>
+        <title>black</title>
         <link href="${pageContext.request.contextPath}/view/lib/dist/css/style.min.css" rel="stylesheet">
     </head>
     <body>

@@ -10,7 +10,7 @@ public class Departments {
 
     private int departmentId;
     private String departmentName;
-    private String departmentCode;
+        private String departmentCode;
     private String description;
     private Date createdAt;
 

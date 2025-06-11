@@ -205,5 +205,19 @@ public class LocationDAO extends DBContext {
     return null; 
 }
 
+public boolean insertDepartments(Departments d) {
+    String sql = "INSERT INTO departments (department_name, department_code, description, created_at) VALUES (?, ?, ?, ?)";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, d.getDepartmentName());
+        ps.setString(2, d.getDepartmentCode());
+        ps.setString(3, d.getDescription());
+        ps.setTimestamp(4, new java.sql.Timestamp(d.getCreatedAt().getTime()));
+        return ps.executeUpdate() > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
 
 }

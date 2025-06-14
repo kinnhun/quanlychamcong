@@ -22,7 +22,7 @@
 
                     <h3 class="fw-bold text-primary mt-4 mb-4">Sửa cấu hình ngày phép</h3>
 
-                    <form action="${pageContext.request.contextPath}/manager/leave-config-edit" method="post" 
+                    <form action="${pageContext.request.contextPath}/admin/leave-config-edit" method="post" 
                           class="border p-4 rounded bg-white shadow-sm" style="max-width: 600px; margin: 0 auto;">
 
                         <input type="hidden" name="configId" value="${config.configId}" />
@@ -53,7 +53,7 @@
                         </div>
 
                         <div class="text-center mt-4">
-                            <a href="${pageContext.request.contextPath}/manager/leave-config" class="btn btn-secondary px-4 py-2 me-2">Huỷ</a>
+                            <a href="${pageContext.request.contextPath}/admin/leave-config" class="btn btn-secondary px-4 py-2 me-2">Huỷ</a>
                             <button type="submit" class="btn btn-primary px-4 py-2">Lưu thay đổi</button>
                         </div>
 

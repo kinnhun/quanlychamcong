@@ -27,7 +27,7 @@
                     <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
                         <h3 class="fw-bold text-primary mb-0">Quản lý loại nghỉ phép</h3>
 
-                        <a href="${pageContext.request.contextPath}/manager/leave-type-add" class="btn btn-success">
+                        <a href="${pageContext.request.contextPath}/admin/leave-type-add" class="btn btn-success">
                             + Thêm mới loại nghỉ phép
                         </a>
                     </div>
@@ -63,7 +63,7 @@
 
                                         <td>
                                             <!-- Nút cập nhật trạng thái -->
-                                            <form id="toggleStatusForm-${type.leaveTypeId}" action="${pageContext.request.contextPath}/manager/leave-types" method="post" style="display:inline;">
+                                            <form id="toggleStatusForm-${type.leaveTypeId}" action="${pageContext.request.contextPath}/admin/leave-types" method="post" style="display:inline;">
                                                 <input type="hidden" name="action" value="toggleStatus">
                                                 <input type="hidden" name="id" value="${type.leaveTypeId}">
                                                 <button type="button" class="btn btn-sm btn-warning"
@@ -73,7 +73,7 @@
                                             </form>
 
                                             <!-- Nút xoá -->
-                                            <form id="deleteForm-${type.leaveTypeId}" action="${pageContext.request.contextPath}/manager/leave-types" method="post"
+                                            <form id="deleteForm-${type.leaveTypeId}" action="${pageContext.request.contextPath}/admin/leave-types" method="post"
                                                   style="display:inline; margin-left: 5px;">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="id" value="${type.leaveTypeId}">
@@ -87,39 +87,39 @@
                                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
                                 <script>
-                                                    function confirmToggleStatus(id, name, currentStatus) {
-                                                        Swal.fire({
-                                                            title: 'Cập nhật trạng thái?',
-                                                            html: `Bạn có chắc muốn <b>cập nhật trạng thái</b> cho loại nghỉ này <b></b><br>`,
-                                                            icon: 'question',
-                                                            showCancelButton: true,
-                                                            confirmButtonText: 'Đồng ý',
-                                                            cancelButtonText: 'Huỷ',
-                                                            confirmButtonColor: '#198754',
-                                                            cancelButtonColor: '#6c757d'
-                                                        }).then((result) => {
-                                                            if (result.isConfirmed) {
-                                                                document.getElementById('toggleStatusForm-' + id).submit();
+                                                            function confirmToggleStatus(id, name, currentStatus) {
+                                                                Swal.fire({
+                                                                    title: 'Cập nhật trạng thái?',
+                                                                    html: `Bạn có chắc muốn <b>cập nhật trạng thái</b> cho loại nghỉ này <b></b><br>`,
+                                                                    icon: 'question',
+                                                                    showCancelButton: true,
+                                                                    confirmButtonText: 'Đồng ý',
+                                                                    cancelButtonText: 'Huỷ',
+                                                                    confirmButtonColor: '#198754',
+                                                                    cancelButtonColor: '#6c757d'
+                                                                }).then((result) => {
+                                                                    if (result.isConfirmed) {
+                                                                        document.getElementById('toggleStatusForm-' + id).submit();
+                                                                    }
+                                                                });
                                                             }
-                                                        });
-                                                    }
 
-                                                    function confirmDelete(id, name) {
-                                                        Swal.fire({
-                                                            title: 'Xoá loại nghỉ phép?',
-                                                            html: `Bạn có chắc muốn <b>xóa</b> loại nghỉ này?<br>Hành động này không thể hoàn tác.`,
-                                                            icon: 'warning',
-                                                            showCancelButton: true,
-                                                            confirmButtonText: 'Xoá',
-                                                            cancelButtonText: 'Huỷ',
-                                                            confirmButtonColor: '#dc3545',
-                                                            cancelButtonColor: '#6c757d'
-                                                        }).then((result) => {
-                                                            if (result.isConfirmed) {
-                                                                document.getElementById('deleteForm-' + id).submit();
+                                                            function confirmDelete(id, name) {
+                                                                Swal.fire({
+                                                                    title: 'Xoá loại nghỉ phép?',
+                                                                    html: `Bạn có chắc muốn <b>xóa</b> loại nghỉ này?<br>Hành động này không thể hoàn tác.`,
+                                                                    icon: 'warning',
+                                                                    showCancelButton: true,
+                                                                    confirmButtonText: 'Xoá',
+                                                                    cancelButtonText: 'Huỷ',
+                                                                    confirmButtonColor: '#dc3545',
+                                                                    cancelButtonColor: '#6c757d'
+                                                                }).then((result) => {
+                                                                    if (result.isConfirmed) {
+                                                                        document.getElementById('deleteForm-' + id).submit();
+                                                                    }
+                                                                });
                                                             }
-                                                        });
-                                                    }
                                 </script>
 
                                 </tr>

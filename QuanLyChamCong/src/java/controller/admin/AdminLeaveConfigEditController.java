@@ -1,4 +1,4 @@
-package controller.manager;
+package controller.admin;
 
 import dal.LeaveRequestDAO;
 import model.LeaveConfig;
@@ -11,8 +11,8 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "ManagerLeaveConfigEditController", urlPatterns = {"/manager/leave-config-edit"})
-public class ManagerLeaveConfigEditController extends HttpServlet {
+@WebServlet(name = "AdminLeaveConfigEditController", urlPatterns = {"/admin/leave-config-edit"})
+public class AdminLeaveConfigEditController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -28,11 +28,11 @@ public class ManagerLeaveConfigEditController extends HttpServlet {
             request.setAttribute("config", config);
             request.setAttribute("leaveTypes", leaveTypes);
 
-            request.getRequestDispatcher("/view/manager/leave-config-edit.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/admin/leave-config-edit.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/manager/leave-config");
+            response.sendRedirect(request.getContextPath() + "/admin/leave-config");
         }
     }
 
@@ -84,7 +84,7 @@ public class ManagerLeaveConfigEditController extends HttpServlet {
             session.setAttribute("error", "Có lỗi xảy ra!");
         }
 
-        response.sendRedirect(request.getContextPath() + "/manager/leave-config");
+        response.sendRedirect(request.getContextPath() + "/admin/leave-config");
     }
 
 }

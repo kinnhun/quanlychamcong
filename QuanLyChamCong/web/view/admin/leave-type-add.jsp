@@ -28,7 +28,7 @@
                     <!-- Title + Back -->
                     <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
                         <h3 class="fw-bold text-primary mb-0">Thêm mới loại nghỉ phép</h3>
-                        <a href="${pageContext.request.contextPath}/manager/leave-types" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+                        <a href="${pageContext.request.contextPath}/admin/leave-types" class="btn btn-outline-secondary rounded-pill px-4 py-2">
                             ← Quay lại danh sách
                         </a>
                     </div>
@@ -41,7 +41,7 @@
 
                                     <h4 class="fw-bold text-center text-primary mb-4">Nhập thông tin loại nghỉ phép</h4>
 
-                                    <form action="${pageContext.request.contextPath}/manager/leave-types" method="post">
+                                    <form action="${pageContext.request.contextPath}/admin/leave-types" method="post">
                                         <input type="hidden" name="action" value="add">
 
                                         <div class="mb-4">
@@ -53,7 +53,7 @@
                                             <button type="submit" class="btn btn-success rounded-pill px-5 py-2 me-3">
                                                 <i class="bi bi-save"></i> Lưu
                                             </button>
-                                            <a href="${pageContext.request.contextPath}/manager/leave-type" class="btn btn-outline-secondary rounded-pill px-5 py-2">
+                                            <a href="${pageContext.request.contextPath}/admin/leave-type" class="btn btn-outline-secondary rounded-pill px-5 py-2">
                                                 Hủy
                                             </a>
                                         </div>

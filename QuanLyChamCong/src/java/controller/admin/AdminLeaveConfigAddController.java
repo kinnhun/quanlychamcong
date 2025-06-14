@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package conntroller.manager;
+package controller.admin;
 
 import dal.LeaveRequestDAO;
 import java.io.IOException;
@@ -18,8 +18,8 @@ import model.LeaveConfig;
 import model.LeaveType;
 import model.Users;
 
-@WebServlet(name = "ManagerLeaveConfigAddController", urlPatterns = {"/manager/leave-config-add"})
-public class ManagerLeaveConfigAddController extends HttpServlet {
+@WebServlet(name = "AdminLeaveConfigAddController", urlPatterns = {"/admin/leave-config-add"})
+public class AdminLeaveConfigAddController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,7 +30,7 @@ public class ManagerLeaveConfigAddController extends HttpServlet {
         List<LeaveType> leaveTypes = dao.getAllLeaveTypesActive();
 
         request.setAttribute("leaveTypes", leaveTypes);
-        request.getRequestDispatcher("/view/manager/leave-config-add.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/admin/leave-config-add.jsp").forward(request, response);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ManagerLeaveConfigAddController extends HttpServlet {
             session.setAttribute("error", "Có lỗi xảy ra!");
         }
 
-        response.sendRedirect(request.getContextPath() + "/manager/leave-config");
+        response.sendRedirect(request.getContextPath() + "/admin/leave-config");
     }
 
 }

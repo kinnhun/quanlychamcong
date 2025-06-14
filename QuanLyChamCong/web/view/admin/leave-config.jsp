@@ -25,7 +25,7 @@
 
                     <h3 class="fw-bold text-primary mt-4 mb-4 d-flex justify-content-between align-items-center">
                         Cấu hình ngày phép
-                        <a href="${pageContext.request.contextPath}/manager/leave-config-add" class="btn btn-success">
+                        <a href="${pageContext.request.contextPath}/admin/leave-config-add" class="btn btn-success">
                             + Thêm mới
                         </a>
                     </h3>
@@ -53,7 +53,7 @@
                                         <td>${config.defaultDays}</td>
                                         <td>${config.createdBy.fullName}</td>
                                         <td>
-                                            <a href="${pageContext.request.contextPath}/manager/leave-config-edit?id=${config.configId}" 
+                                            <a href="${pageContext.request.contextPath}/admin/leave-config-edit?id=${config.configId}" 
                                                class="btn btn-sm btn-primary">
                                                 Sửa
                                             </a>

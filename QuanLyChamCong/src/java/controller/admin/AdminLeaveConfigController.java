@@ -1,4 +1,4 @@
-package conntroller.manager;
+package controller.admin;
 
 import dal.LeaveRequestDAO;
 import model.LeaveConfig;
@@ -12,8 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebServlet(name = "LeaveConfigController", urlPatterns = {"/manager/leave-config"})
-public class ManagerLeaveConfigController extends HttpServlet {
+@WebServlet(name = "AdminLeaveConfigController", urlPatterns = {"/admin/leave-config"})
+public class AdminLeaveConfigController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -24,7 +24,7 @@ public class ManagerLeaveConfigController extends HttpServlet {
         List<LeaveConfig> list = dao.getAllConfigs();
 
         request.setAttribute("configs", list);
-        request.getRequestDispatcher("/view/manager/leave-config.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/admin/leave-config.jsp").forward(request, response);
     }
 
 }

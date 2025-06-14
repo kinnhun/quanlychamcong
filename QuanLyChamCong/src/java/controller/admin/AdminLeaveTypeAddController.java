@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package conntroller.manager;
+package controller.admin;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,12 +12,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "ManagerLeaveTypeAddController", urlPatterns = {"/manager/leave-type-add"})
-public class ManagerLeaveTypeAddController extends HttpServlet {
+@WebServlet(name = "AdminLeaveTypeAddController", urlPatterns = {"/admin/leave-type-add"})
+public class AdminLeaveTypeAddController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/view/manager/leave-type-add.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/admin/leave-type-add.jsp").forward(request, response);
     }
 }

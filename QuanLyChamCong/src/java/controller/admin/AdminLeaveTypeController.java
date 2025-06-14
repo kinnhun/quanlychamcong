@@ -1,4 +1,4 @@
-package controller.manager;
+package controller.admin;
 
 import dal.LeaveRequestDAO;
 import java.io.IOException;
@@ -10,8 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.LeaveType;
 
-@WebServlet(name = "ManagerLeaveTypeController", urlPatterns = {"/manager/leave-types"})
-public class ManagerLeaveTypeController extends HttpServlet {
+@WebServlet(name = "AdminLeaveTypeController", urlPatterns = {"/admin/leave-types"})
+public class AdminLeaveTypeController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -21,7 +21,7 @@ public class ManagerLeaveTypeController extends HttpServlet {
         List<LeaveType> leaveTypes = dao.getAllLeaveTypes();
 
         request.setAttribute("leaveTypes", leaveTypes);
-        request.getRequestDispatcher("/view/manager/leave-type.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/admin/leave-type.jsp").forward(request, response);
     }
 
 @Override
@@ -52,7 +52,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             request.getSession().setAttribute("error", "Tên loại nghỉ phép không được để trống.");
         }
 
-        response.sendRedirect(request.getContextPath() + "/manager/leave-types");
+        response.sendRedirect(request.getContextPath() + "/admin/leave-types");
 
     } else if ("delete".equals(action)) {
         // Xóa loại nghỉ phép
@@ -71,7 +71,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             request.getSession().setAttribute("error", "ID không hợp lệ.");
         }
 
-        response.sendRedirect(request.getContextPath() + "/manager/leave-types");
+        response.sendRedirect(request.getContextPath() + "/admin/leave-types");
 
     } else if ("toggleStatus".equals(action)) {
         // Cập nhật trạng thái
@@ -90,17 +90,17 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             request.getSession().setAttribute("error", "ID không hợp lệ.");
         }
 
-        response.sendRedirect(request.getContextPath() + "/manager/leave-types");
+        response.sendRedirect(request.getContextPath() + "/admin/leave-types");
 
     } else {
         // Không rõ action → quay về danh sách
-        response.sendRedirect(request.getContextPath() + "/manager/leave-types");
+        response.sendRedirect(request.getContextPath() + "/admin/leave-types");
     }
 }
 
 
     @Override
     public String getServletInfo() {
-        return "ManagerLeaveTypeController - Quản lý loại nghỉ phép";
+        return "AdminLeaveTypeController - Quản lý loại nghỉ phép";
     }
 }

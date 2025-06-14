@@ -59,7 +59,7 @@ public class AttendanceController extends HttpServlet {
         );
 
         if (fileName == null) {
-            session.setAttribute("error", "❌ Không thể lưu ảnh chấm công.");
+            session.setAttribute("error", " Không thể lưu ảnh chấm công.");
             response.sendRedirect(request.getContextPath() + "/view/user/attendance.jsp");
             return;
         }
@@ -69,9 +69,9 @@ public class AttendanceController extends HttpServlet {
         boolean success = dao.saveAttendance(user.getUserId(), action, fileName);
 
         if (success) {
-            session.setAttribute("message", "✅ Chấm công thành công.");
+            session.setAttribute("message", "Chấm công thành công.");
         } else {
-            session.setAttribute("error", "❌ Chấm công thất bại. Vui lòng thử lại.");
+            session.setAttribute("error", " Chấm công thất bại. Vui lòng thử lại.");
         }
 
         response.sendRedirect(request.getContextPath() + "/attendance");

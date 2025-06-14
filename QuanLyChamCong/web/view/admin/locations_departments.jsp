@@ -25,7 +25,7 @@
 
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h3 class="text-primary fw-bold fs-3 mb-0">📌 Phòng ban tại địa điểm: ${location.name}</h3>
-                        <a href="${pageContext.request.contextPath}/admin/location" class="btn btn-outline-secondary">
+                        <a href="${pageContext.request.contextPath}/admin/locations" class="btn btn-outline-secondary">
                             ⬅️ Quay lại danh sách địa điểm
                         </a>
                     </div>

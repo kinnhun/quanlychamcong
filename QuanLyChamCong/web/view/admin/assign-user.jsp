@@ -60,35 +60,67 @@
                             </form>
                         </div>
                     </div>
-                                
-                                
-               <!-- ➕ Form phân công mới -->
-<div class="card">
-    <div class="card-body">
-        <h4 class="card-title">Thêm phân công mới</h4>
-        <form method="post" action="${pageContext.request.contextPath}/admin/assign-user-location">
-            <div class="row">
-                <div class="form-group col-md-6">
-                    <label>Nhân viên</label>
-                    <select name="userId" class="form-control" required>
-                        <c:forEach var="u" items="${userList}">
-                            <option value="${u.userId}">${u.fullName} (${u.username})</option>
-                        </c:forEach>
-                    </select>
-                </div>
-                <div class="form-group col-md-6">
-                    <label>Chi nhánh</label>
-                    <select name="locationId" class="form-control" required>
-                        <c:forEach var="l" items="${locationList}">
-                            <option value="${l.id}">${l.name} - ${l.address}</option>
-                        </c:forEach>
-                    </select>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Phân công</button>
-        </form>
-    </div>
-</div>
+
+
+                    <!-- ➕ Form phân công mới -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>Thêm phân công mới</h4>
+                            <form method="post" action="${pageContext.request.contextPath}/admin/assign-user-location">
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <label>Nhân viên</label>
+                                        <select name="userId" class="form-control" required>
+                                            <c:forEach var="u" items="${userList}">
+                                                <option value="${u.userId}">${u.fullName} (${u.username})</option>
+                                            </c:forEach>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>Chi nhánh</label>
+                                        <select name="locationId" class="form-control" id="locationId" onchange="fetchDepartments()" required>
+                                            <option value="">-- Chọn chi nhánh --</option>
+                                            <c:forEach var="l" items="${locationList}">
+                                                <option value="${l.id}">${l.name} - ${l.address}</option>
+                                            </c:forEach>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>Phòng ban</label>
+                                        <select name="departmentId" class="form-control" id="departmentSelect">
+                                            <option value="">-- Chọn phòng ban --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-3">Phân công</button>
+                            </form>
+                        </div>
+                    </div>
+                    <script>
+                        function fetchDepartments() {
+                            const locationId = document.getElementById('locationId').value;
+                            const departmentSelect = document.getElementById('departmentSelect');
+
+                            departmentSelect.innerHTML = '<option>Đang tải...</option>';
+
+                            fetch('<c:url value="/admin/assign-user-location" />?ajax=true&locationId=' + locationId)
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        departmentSelect.innerHTML = '<option value="">-- Chọn phòng ban --</option>';
+                                        data.forEach(dep => {
+                                            const option = document.createElement('option');
+                                            option.value = dep.id;             // ✅ dùng đúng key
+                                            option.text = dep.name;           // ✅ dùng đúng key
+                                            departmentSelect.appendChild(option);
+                                        });
+                                    })
+                                    .catch(err => {
+                                        departmentSelect.innerHTML = '<option value=\"\">Lỗi tải dữ liệu</option>';
+                                        console.error(err);
+                                    });
+                        }
+                    </script>
+
 
 
                     <!-- 📋 Danh sách phân công -->
@@ -101,8 +133,9 @@
                                         <tr>
                                             <th>Nhân viên</th>
                                             <th>Email</th>
-                                            <th>Chi nhánh</th>
+                                            <th>Chi nhánh</th>                                           
                                             <th>Địa chỉ</th>
+                                            <th>Phòng ban</th> 
                                             <th>Ngày phân công</th>
                                             <th>Hành động</th>
                                         </tr>
@@ -110,18 +143,21 @@
                                     <tbody>
                                         <c:forEach var="row" items="${assignmentList}">
                                             <tr>
-                                                <td>${row[0]}</td>
-                                                <td>${row[1]}</td>
-                                                <td>${row[2]}</td>
-                                                <td>${row[3]}</td>
-                                                <td><fmt:formatDate value="${row[4]}" pattern="dd/MM/yyyy HH:mm"/></td>
+                                                <td>${row[0]}</td> <!-- full_name -->
+                                                <td>${row[1]}</td> <!-- email -->
+                                                <td>${row[2]}</td> <!-- location_name -->
+                                                <td>${row[3]}</td> <!-- address -->
+                                                <td>${row[4]}</td> <!-- ✅ department_name -->
+                                                <td><fmt:formatDate value="${row[5]}" pattern="dd/MM/yyyy HH:mm"/></td>
                                                 <td>
                                                     <form action="${pageContext.request.contextPath}/admin/delete-assignment" method="post" style="display:inline;">
-    <input type="hidden" name="userId" value="${row[5]}" />
-    <input type="hidden" name="locationId" value="${row[6]}" />
-    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa phân công này?');">Xóa</button>
-</form>
-
+                                                        <input type="hidden" name="userId" value="${row[6]}" />
+                                                        <input type="hidden" name="locationId" value="${row[7]}" />
+                                                        <input type="hidden" name="departmentId" value="${row[8]}" /> <!-- ✅ thêm -->
+                                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa phân công này?');">
+                                                            Xóa
+                                                        </button>
+                                                    </form>
                                                 </td>
                                             </tr>
                                         </c:forEach>
@@ -180,7 +216,7 @@
                         </div>
                     </div>
 
-                  
+
                 </div>
             </div>
 

@@ -303,4 +303,33 @@ public class LocationDAO extends DBContext {
         }
     }
 
+    public List<Departments> getDepartmentsByLocationId(int locId) {
+        List<Departments> list = new ArrayList<>();
+        String sql = "SELECT d.* FROM location_departments ld "
+                + "JOIN departments d ON ld.department_id = d.department_id "
+                + "WHERE ld.location_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, locId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Departments d = new Departments();
+                d.setDepartmentId(rs.getInt("department_id"));
+                d.setDepartmentName(rs.getString("department_name"));
+                d.setDepartmentCode(rs.getString("department_code"));
+                d.setDescription(rs.getString("description"));
+                d.setCreatedAt(rs.getTimestamp("created_at"));
+                list.add(d);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    public static void main(String[] args) {
+        LocationDAO ldao = new LocationDAO();
+        List<Departments> list = ldao.getDepartmentsByLocation(1);
+        for (Departments departments : list) {
+            System.out.println(departments.toString());
+        }
+    }
 }

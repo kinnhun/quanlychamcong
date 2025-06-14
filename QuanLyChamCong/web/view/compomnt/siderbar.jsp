@@ -42,18 +42,19 @@
                                 <span class="hide-menu">Quản lý địa điểm</span>
                             </a>
                         </li>
+                         <li class="sidebar-item">
+                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/admin/location-departments">
+                                <i data-feather="map-pin" class="feather-icon"></i>
+                                <span class="hide-menu">Quản lý phòng ban</span>
+                            </a>
+                        </li>
                         <li class="sidebar-item">
                             <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/admin/assign-user-location">
                                 <i data-feather="user-check" class="feather-icon"></i>
                                 <span class="hide-menu">Phân công nhân viên</span>
                             </a>
                         </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/admin/location-departments">
-                                <i data-feather="map-pin" class="feather-icon"></i>
-                                <span class="hide-menu">Phân bổ phòng ban</span>
-                            </a>
-                        </li>
+                       
                         <li class="sidebar-item">
     <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/admin/shifts">
         <i data-feather="clock" class="feather-icon"></i>

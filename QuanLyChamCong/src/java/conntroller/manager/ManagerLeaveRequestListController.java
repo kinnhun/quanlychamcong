@@ -12,8 +12,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import model.LeaveRequest;
+import model.Users;
 
 @WebServlet(name = "ManagerLeaveRequestListController", urlPatterns = {"/manager/leave-requests"})
 public class ManagerLeaveRequestListController extends HttpServlet {
@@ -56,9 +61,79 @@ public class ManagerLeaveRequestListController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        Users user = (Users) session.getAttribute("user");
+
         LeaveRequestDAO dao = new LeaveRequestDAO();
-        List<LeaveRequest> list = dao.getAllRequests();
-        request.setAttribute("requests", list);
+        List<LeaveRequest> list = dao.getAllRequestsByManager(user.getUserId());
+
+        // Xử lý bộ lọc
+        Set<String> userNames = new LinkedHashSet<>();
+        Set<String> deptNames = new LinkedHashSet<>();
+        for (LeaveRequest r : list) {
+            userNames.add(r.getUser().getFullName());
+            if (r.getDepartments() != null && r.getDepartments().getDepartmentName() != null) {
+                deptNames.add(r.getDepartments().getDepartmentName());
+            }
+        }
+
+        // Xử lý lọc theo query param
+        String filterUser = request.getParameter("filterUser");
+        String filterDept = request.getParameter("filterDepartment");
+        String filterStatus = request.getParameter("filterStatus");
+
+        List<LeaveRequest> filteredList = new ArrayList<>();
+        for (LeaveRequest r : list) {
+            boolean match = true;
+            if (filterUser != null && !filterUser.isEmpty() && !r.getUser().getFullName().equals(filterUser)) {
+                match = false;
+            }
+            if (filterDept != null && !filterDept.isEmpty()) {
+                String deptName = (r.getDepartments() != null) ? r.getDepartments().getDepartmentName() : "";
+                if (!deptName.equals(filterDept)) {
+                    match = false;
+                }
+            }
+            if (filterStatus != null && !filterStatus.isEmpty()) {
+                // Chuyển đổi status trong DB về label filter
+                String statusLabel = "";
+                switch (r.getStatus()) {
+                    case "approved":
+                        statusLabel = "Đã duyệt";
+                        break;
+                    case "pending":
+                        statusLabel = "Đang chờ";
+                        break;
+                    case "rejected":
+                        statusLabel = "Từ chối";
+                        break;
+                    case "cancelled":
+                        statusLabel = "Đã hủy";
+                        break;
+                    default:
+                        statusLabel = r.getStatus();
+                }
+                if (!statusLabel.equals(filterStatus)) {
+                    match = false;
+                }
+            }
+            if (match) {
+                filteredList.add(r);
+            }
+        }
+
+        request.setAttribute("userNames", userNames);
+        request.setAttribute("deptNames", deptNames);
+        request.setAttribute("requests", filteredList);
+        request.setAttribute("filterUser", filterUser);
+        request.setAttribute("filterDepartment", filterDept);
+        request.setAttribute("filterStatus", filterStatus);
+
         request.getRequestDispatcher("/view/manager/leave_requests.jsp").forward(request, response);
     }
 

@@ -6,6 +6,7 @@ import java.sql.*;
 import java.util.*;
 import java.sql.Date;
 import java.time.LocalDate;
+import model.Departments;
 import model.LeaveConfig;
 import model.LeaveType;
 import model.Locations;
@@ -52,91 +53,90 @@ public class LeaveRequestDAO extends DBContext {
 //
 //        return list;
 //    }
-    public List<LeaveRequest> getAllRequests() {
-        List<LeaveRequest> list = new ArrayList<>();
-
-        String sql = "SELECT lr.*, u.full_name AS requester, a.full_name AS approver, "
-                + "l.location_id, l.name AS location_name, l.address, l.is_active, l.ip_map "
-                + "FROM leave_requests lr "
-                + "JOIN users u ON lr.user_id = u.user_id "
-                + "LEFT JOIN users a ON lr.approved_by = a.user_id "
-                + "LEFT JOIN user_locations ul ON ul.user_id = u.user_id "
-                + "LEFT JOIN locations l ON ul.location_id = l.location_id "
-                + "ORDER BY lr.request_id";
-
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ResultSet rs = ps.executeQuery();
-
-            int currentRequestId = -1;
-            LeaveRequest lr = null;
-
-            while (rs.next()) {
-                int requestId = rs.getInt("request_id");
-
-                // Nếu gặp request_id mới → tạo LeaveRequest mới
-                if (requestId != currentRequestId) {
-                    lr = new LeaveRequest();
-
-                    // Lấy người nộp đơn
-                    Users requester = new Users();
-                    requester.setUserId(rs.getInt("user_id"));
-                    requester.setFullName(rs.getString("requester"));
-
-                    // Lấy người duyệt (nếu có)
-                    Users approver = null;
-                    if (rs.getInt("approved_by") != 0) {
-                        approver = new Users();
-                        approver.setUserId(rs.getInt("approved_by"));
-                        approver.setFullName(rs.getString("approver"));
-                    }
-
-                    // Set thông tin LeaveRequest
-                    lr.setRequestId(requestId);
-                    lr.setUser(requester);
-                    lr.setStartDate(rs.getDate("start_date"));
-                    lr.setEndDate(rs.getDate("end_date"));
-
-                    // leave_type
-                    int leaveTypeId = rs.getInt("leave_type_id");
-                    LeaveRequestDAO ldao = new LeaveRequestDAO();
-                    LeaveType leaveType = ldao.getLeaveTypeById(leaveTypeId);
-                    lr.setLeaveTypeId(leaveType);
-                    lr.setStatus(rs.getString("status"));
-                    lr.setDaysCount(rs.getInt("days_count"));
-                    lr.setReason(rs.getString("reason"));
-                    lr.setCreatedAt(rs.getTimestamp("created_at"));
-                    lr.setApprovedBy(approver);
-                    lr.setApproveComment(rs.getString("approve_comment"));
-
-                    // Tạo list locations mới
-                    lr.setLocations(new ArrayList<>());
-
-                    // Thêm vào list chính
-                    list.add(lr);
-
-                    currentRequestId = requestId;
-                }
-
-                // Với mỗi dòng → kiểm tra nếu có location thì thêm vào list locations
-                int locationId = rs.getInt("location_id");
-                if (locationId != 0) {
-                    Locations loc = new Locations();
-                    loc.setId(locationId);
-                    loc.setName(rs.getString("location_name"));
-                    loc.setAddress(rs.getString("address"));
-                    loc.setIsActive(rs.getBoolean("is_active"));
-                    loc.setIpMap(rs.getString("ip_map"));
-
-                    lr.getLocations().add(loc);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
-
+//    public List<LeaveRequest> getAllRequests() {
+//        List<LeaveRequest> list = new ArrayList<>();
+//
+//        String sql = "SELECT lr.*, u.full_name AS requester, a.full_name AS approver, "
+//                + "l.location_id, l.name AS location_name, l.address, l.is_active, l.ip_map "
+//                + "FROM leave_requests lr "
+//                + "JOIN users u ON lr.user_id = u.user_id "
+//                + "LEFT JOIN users a ON lr.approved_by = a.user_id "
+//                + "LEFT JOIN user_locations ul ON ul.user_id = u.user_id "
+//                + "LEFT JOIN locations l ON ul.location_id = l.location_id "
+//                + "ORDER BY lr.request_id";
+//
+//        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+//            ResultSet rs = ps.executeQuery();
+//
+//            int currentRequestId = -1;
+//            LeaveRequest lr = null;
+//
+//            while (rs.next()) {
+//                int requestId = rs.getInt("request_id");
+//
+//                // Nếu gặp request_id mới → tạo LeaveRequest mới
+//                if (requestId != currentRequestId) {
+//                    lr = new LeaveRequest();
+//
+//                    // Lấy người nộp đơn
+//                    Users requester = new Users();
+//                    requester.setUserId(rs.getInt("user_id"));
+//                    requester.setFullName(rs.getString("requester"));
+//
+//                    // Lấy người duyệt (nếu có)
+//                    Users approver = null;
+//                    if (rs.getInt("approved_by") != 0) {
+//                        approver = new Users();
+//                        approver.setUserId(rs.getInt("approved_by"));
+//                        approver.setFullName(rs.getString("approver"));
+//                    }
+//
+//                    // Set thông tin LeaveRequest
+//                    lr.setRequestId(requestId);
+//                    lr.setUser(requester);
+//                    lr.setStartDate(rs.getDate("start_date"));
+//                    lr.setEndDate(rs.getDate("end_date"));
+//
+//                    // leave_type
+//                    int leaveTypeId = rs.getInt("leave_type_id");
+//                    LeaveRequestDAO ldao = new LeaveRequestDAO();
+//                    LeaveType leaveType = ldao.getLeaveTypeById(leaveTypeId);
+//                    lr.setLeaveTypeId(leaveType);
+//                    lr.setStatus(rs.getString("status"));
+//                    lr.setDaysCount(rs.getInt("days_count"));
+//                    lr.setReason(rs.getString("reason"));
+//                    lr.setCreatedAt(rs.getTimestamp("created_at"));
+//                    lr.setApprovedBy(approver);
+//                    lr.setApproveComment(rs.getString("approve_comment"));
+//
+//                    // Tạo list locations mới
+//                    lr.setLocations(new ArrayList<>());
+//
+//                    // Thêm vào list chính
+//                    list.add(lr);
+//
+//                    currentRequestId = requestId;
+//                }
+//
+//                // Với mỗi dòng → kiểm tra nếu có location thì thêm vào list locations
+//                int locationId = rs.getInt("location_id");
+//                if (locationId != 0) {
+//                    Locations loc = new Locations();
+//                    loc.setId(locationId);
+//                    loc.setName(rs.getString("location_name"));
+//                    loc.setAddress(rs.getString("address"));
+//                    loc.setIsActive(rs.getBoolean("is_active"));
+//                    loc.setIpMap(rs.getString("ip_map"));
+//
+//                    lr.getLocations().add(loc);
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return list;
+//    }
     public void approveRequest(int requestId, int approverId, String note) {
         String sql = "UPDATE leave_requests SET status = 'approved', approved_by = ?, approve_comment = ? WHERE request_id = ?";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -548,6 +548,97 @@ public class LeaveRequestDAO extends DBContext {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<LeaveRequest> getAllRequestsByManager(int managerId) {
+        List<LeaveRequest> list = new ArrayList<>();
+
+        String sql = """
+        SELECT lr.*, 
+               u.user_id, u.full_name, u.email,
+               lt.leave_type_id, lt.leave_type_name,
+               a.user_id AS approver_id, a.full_name AS approver_name,
+               l.location_id, l.name AS location_name,
+               d.department_id, d.department_name
+        FROM leave_requests lr
+        JOIN users u ON lr.user_id = u.user_id
+        JOIN leave_types lt ON lr.leave_type_id = lt.leave_type_id
+        LEFT JOIN users a ON lr.approved_by = a.user_id
+        LEFT JOIN user_locations ul ON u.user_id = ul.user_id
+        LEFT JOIN locations l ON ul.location_id = l.location_id
+        LEFT JOIN departments d ON ul.department_id = d.department_id
+        WHERE EXISTS (
+            SELECT 1 FROM user_locations m_ul
+            WHERE m_ul.user_id = ?
+              AND m_ul.location_id = ul.location_id
+        )
+    """;
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, managerId); // Gán managerId cho subquery
+
+            try (ResultSet rs = ps.executeQuery()) {
+                Set<Integer> seen = new HashSet<>(); // Tránh trùng request_id
+
+                while (rs.next()) {
+                    int requestId = rs.getInt("request_id");
+                    if (seen.contains(requestId)) {
+                        continue;
+                    }
+                    seen.add(requestId);
+
+                    LeaveRequest lr = new LeaveRequest();
+
+                    lr.setRequestId(requestId);
+                    lr.setStartDate(rs.getDate("start_date"));
+                    lr.setEndDate(rs.getDate("end_date"));
+                    lr.setStatus(rs.getString("status"));
+                    lr.setDaysCount(rs.getInt("days_count"));
+                    lr.setReason(rs.getString("reason"));
+                    lr.setCreatedAt(rs.getTimestamp("created_at"));
+                    lr.setApproveComment(rs.getString("approve_comment"));
+
+                    // User (người gửi đơn)
+                    Users user = new Users();
+                    user.setUserId(rs.getInt("user_id"));
+                    user.setFullName(rs.getString("full_name"));
+                    user.setEmail(rs.getString("email"));
+                    lr.setUser(user);
+
+                    // Approver (người duyệt)
+                    Users approver = new Users();
+                    approver.setUserId(rs.getInt("approver_id"));
+                    approver.setFullName(rs.getString("approver_name"));
+                    lr.setApprovedBy(approver);
+
+                    // Loại nghỉ
+                    LeaveType leaveType = new LeaveType();
+                    leaveType.setLeaveTypeId(rs.getInt("leave_type_id"));
+                    leaveType.setLeaveTypeName(rs.getString("leave_type_name"));
+                    lr.setLeaveTypeId(leaveType);
+
+                    // Địa điểm
+                    Locations loc = new Locations();
+                    loc.setId(rs.getInt("location_id"));
+                    loc.setName(rs.getString("location_name"));
+                    lr.setLocations(loc);
+
+                    // Phòng ban
+                    Departments dept = new Departments();
+                    dept.setDepartmentId(rs.getInt("department_id"));
+                    dept.setDepartmentName(rs.getString("department_name"));
+                    lr.setDepartments(dept);
+
+                    list.add(lr);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
 }

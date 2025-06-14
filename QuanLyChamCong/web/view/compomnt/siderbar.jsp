@@ -62,6 +62,12 @@
                             </a>
                         </li>
 
+                        <li class="sidebar-item">
+                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/admin/leave-types">
+                                <i data-feather="tag" class="feather-icon"></i>
+                                <span class="hide-menu">Loại nghỉ phép</span>
+                            </a>
+                        </li>
 
                         <li class="sidebar-item">
                             <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/admin/leave-config">
@@ -69,15 +75,9 @@
                                 <span class="hide-menu">Cấu hình ngày phép</span>
                             </a>
                         </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/admin/leave-types">
-                                <i data-feather="tag" class="feather-icon"></i>
-                                <span class="hide-menu">Loại nghỉ phép</span>
-                            </a>
-                        </li>
-                        
-                        
-                        
+
+
+
                         <p>Manager</p>
                         <li class="sidebar-item">
                             <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/manager/leave-requests">

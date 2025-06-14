@@ -8,7 +8,7 @@ package model;
  *
  * @author kinkin
  */
-public class Locations {
+    public class Locations {
     private int id;
     private String name;
     private String address;

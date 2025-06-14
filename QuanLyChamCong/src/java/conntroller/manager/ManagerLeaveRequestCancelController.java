@@ -8,8 +8,8 @@ import model.Users;
 import java.io.IOException;
 import java.util.Set;
 
-@WebServlet(name = "ManagerCancelLeaveRequestController", urlPatterns = {"/manager/leave-requests-cancel"})
-public class ManagerCancelLeaveRequestController extends HttpServlet {
+@WebServlet(name = "ManagerLeaveRequestCancelController", urlPatterns = {"/manager/leave-requests-cancel"})
+public class ManagerLeaveRequestCancelController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

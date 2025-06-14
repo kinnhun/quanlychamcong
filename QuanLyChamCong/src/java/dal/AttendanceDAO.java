@@ -14,6 +14,7 @@ import java.util.List;
 import model.Attendance;
 import model.Locations;
 import java.sql.Timestamp;
+import model.Users;
 
 public class AttendanceDAO extends DBContext {
 
@@ -91,6 +92,235 @@ public class AttendanceDAO extends DBContext {
         }
 
         return false;
+    }
+
+    public List<Attendance> getAttendanceByManager(int managerId) {
+        List<Attendance> list = new ArrayList<>();
+        String sql = """
+        SELECT a.*, 
+               u.user_id, u.full_name, u.username,
+               l.location_id, l.name AS location_name, l.address AS location_address
+        FROM attendance a
+        JOIN users u ON a.user_id = u.user_id
+        LEFT JOIN locations l ON a.location_id = l.location_id
+        -- Chỉ lấy các dòng mà manager quản lý user đó qua user_locations
+        WHERE EXISTS (
+            SELECT 1 FROM user_locations ul
+            WHERE ul.user_id = a.user_id
+              AND EXISTS (
+                  SELECT 1 FROM user_locations m_ul
+                  WHERE m_ul.user_id = ?
+                    AND m_ul.location_id = ul.location_id
+              )
+        )
+        ORDER BY a.date DESC, u.full_name ASC
+    """;
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, managerId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Attendance att = new Attendance();
+
+                    att.setAttendanceId(rs.getInt("attendance_id"));
+
+                    // User
+                    Users user = new Users();
+                    user.setUserId(rs.getInt("user_id"));
+                    user.setFullName(rs.getString("full_name"));
+                    user.setUsername(rs.getString("username"));
+                    att.setUser(user);
+
+                    // Date, Time
+                    att.setDate(rs.getDate("date"));
+                    att.setCheckinTime(rs.getTimestamp("checkin_time"));
+                    att.setCheckoutTime(rs.getTimestamp("checkout_time"));
+
+                    // Location
+                    Locations loc = new Locations();
+                    loc.setId(rs.getInt("location_id"));
+                    loc.setName(rs.getString("location_name"));
+                    loc.setAddress(rs.getString("location_address"));
+                    att.setLocation(loc);
+
+                    att.setCheckinImageUrl(rs.getString("checkin_image_url"));
+                    att.setCheckoutImageUrl(rs.getString("checkout_image_url"));
+                    att.setIsLocked(rs.getBoolean("is_locked"));
+                    att.setCreatedAt(rs.getTimestamp("created_at"));
+
+                    list.add(att);
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public int countAttendanceByManagerFilter(int managerId, Integer employeeId, String status, String date) {
+        StringBuilder sql = new StringBuilder("""
+        SELECT COUNT(*) FROM attendance a
+        JOIN users u ON a.user_id = u.user_id
+        WHERE EXISTS (
+            SELECT 1 FROM user_locations ul
+            WHERE ul.user_id = a.user_id
+              AND EXISTS (
+                  SELECT 1 FROM user_locations m_ul
+                  WHERE m_ul.user_id = ?
+                    AND m_ul.location_id = ul.location_id
+              )
+        )
+    """);
+        List<Object> params = new ArrayList<>();
+        params.add(managerId);
+
+        if (employeeId != null) {
+            sql.append(" AND a.user_id = ? ");
+            params.add(employeeId);
+        }
+        if (status != null && !status.isEmpty()) {
+            if (status.equals("present")) {
+                sql.append(" AND a.checkin_time IS NOT NULL ");
+            } else if (status.equals("absent")) {
+                sql.append(" AND a.checkin_time IS NULL ");
+            }
+        }
+        if (date != null && !date.isEmpty()) {
+            sql.append(" AND a.date = ? ");
+            params.add(Date.valueOf(date));
+        }
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<Attendance> getAttendanceByManagerFilter(int managerId, Integer employeeId, String status, String date, int page, int pageSize) {
+        List<Attendance> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("""
+        SELECT a.*, 
+               u.user_id, u.full_name, u.username,
+               l.location_id, l.name AS location_name, l.address AS location_address
+        FROM attendance a
+        JOIN users u ON a.user_id = u.user_id
+        LEFT JOIN locations l ON a.location_id = l.location_id
+        WHERE EXISTS (
+            SELECT 1 FROM user_locations ul
+            WHERE ul.user_id = a.user_id
+              AND EXISTS (
+                  SELECT 1 FROM user_locations m_ul
+                  WHERE m_ul.user_id = ?
+                    AND m_ul.location_id = ul.location_id
+              )
+        )
+    """);
+        List<Object> params = new ArrayList<>();
+        params.add(managerId);
+
+        if (employeeId != null) {
+            sql.append(" AND a.user_id = ? ");
+            params.add(employeeId);
+        }
+        if (status != null && !status.isEmpty()) {
+            if (status.equals("present")) {
+                sql.append(" AND a.checkin_time IS NOT NULL ");
+            } else if (status.equals("absent")) {
+                sql.append(" AND a.checkin_time IS NULL ");
+            }
+        }
+        if (date != null && !date.isEmpty()) {
+            sql.append(" AND a.date = ? ");
+            params.add(Date.valueOf(date));
+        }
+        sql.append(" ORDER BY a.date DESC, u.full_name ASC ");
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
+
+        // Phân trang tính offset
+        int offset = (page - 1) * pageSize;
+        params.add(offset);
+        params.add(pageSize);
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Attendance att = new Attendance();
+
+                att.setAttendanceId(rs.getInt("attendance_id"));
+
+                // User
+                Users user = new Users();
+                user.setUserId(rs.getInt("user_id"));
+                user.setFullName(rs.getString("full_name"));
+                user.setUsername(rs.getString("username"));
+                att.setUser(user);
+
+                // Date, Time
+                att.setDate(rs.getDate("date"));
+                att.setCheckinTime(rs.getTimestamp("checkin_time"));
+                att.setCheckoutTime(rs.getTimestamp("checkout_time"));
+
+                // Location
+                Locations loc = new Locations();
+                loc.setId(rs.getInt("location_id"));
+                loc.setName(rs.getString("location_name"));
+                loc.setAddress(rs.getString("location_address"));
+                att.setLocation(loc);
+
+                att.setCheckinImageUrl(rs.getString("checkin_image_url"));
+                att.setCheckoutImageUrl(rs.getString("checkout_image_url"));
+                att.setIsLocked(rs.getBoolean("is_locked"));
+                att.setCreatedAt(rs.getTimestamp("created_at"));
+
+                list.add(att);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Users> getEmployeesByManager(int managerId) {
+        List<Users> list = new ArrayList<>();
+        String sql = """
+        SELECT DISTINCT u.user_id, u.full_name, u.username
+        FROM users u
+        JOIN user_locations ul ON ul.user_id = u.user_id
+        WHERE EXISTS (
+            SELECT 1 FROM user_locations m_ul
+            WHERE m_ul.user_id = ?
+              AND m_ul.location_id = ul.location_id
+        )
+       
+        ORDER BY u.full_name ASC
+    """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, managerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Users user = new Users();
+                user.setUserId(rs.getInt("user_id"));
+                user.setFullName(rs.getString("full_name"));
+                user.setUsername(rs.getString("username"));
+                list.add(user);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return list;
     }
 
 }

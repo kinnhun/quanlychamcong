@@ -7,9 +7,9 @@ package model;
 import java.sql.Timestamp;
 import java.util.Date;
 
-
 public class Attendance {
-       private int attendanceId;
+
+    private int attendanceId;
     private Users user;
     private Date date;
     private Timestamp checkinTime;
@@ -120,7 +120,5 @@ public class Attendance {
     public String toString() {
         return "Attendance{" + "attendanceId=" + attendanceId + ", user=" + user + ", date=" + date + ", checkinTime=" + checkinTime + ", checkoutTime=" + checkoutTime + ", location=" + location + ", checkinImageUrl=" + checkinImageUrl + ", checkoutImageUrl=" + checkoutImageUrl + ", isLocked=" + isLocked + ", createdAt=" + createdAt + '}';
     }
-    
-    
-    
+
 }

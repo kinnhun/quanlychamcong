@@ -11,8 +11,8 @@ import model.Users;
 import java.io.IOException;
 import java.util.Set;
 
-@WebServlet(name = "ManagerRejectLeaveRequestController", urlPatterns = {"/manager/leave-requests-reject"})
-public class ManagerRejectLeaveRequestController extends HttpServlet {
+@WebServlet(name = "ManagerLeaveRequestRejectController", urlPatterns = {"/manager/leave-requests-reject"})
+public class ManagerLeaveRequestRejectController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

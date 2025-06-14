@@ -51,29 +51,39 @@ public class AttendanceController extends HttpServlet {
         String action = request.getParameter("action"); // "checkin" hoặc "checkout"
         String imageBase64 = request.getParameter("imageBase64");
 
-        // Gọi hàm lưu ảnh và truyền context để lấy đường dẫn /uploads
+        // 1. Lưu file ảnh, chỉ lấy tên file (vd: 15_checkin_20240614_162300.png)
         String fileName = Base64ImageUtil.saveImage(
                 imageBase64,
-                user.getUserId() + "_" + action,
+                user.getUserId(), // truyền userId
+                action, // truyền action (checkin/checkout)
                 getServletContext()
         );
 
         if (fileName == null) {
-            session.setAttribute("error", " Không thể lưu ảnh chấm công.");
+            session.setAttribute("error", "Không thể lưu ảnh chấm công.");
             response.sendRedirect(request.getContextPath() + "/view/user/attendance.jsp");
             return;
         }
 
-        // Gọi DAO để ghi dữ liệu vào bảng attendance
+        // 2. Ghép URL đầy đủ
+        String contextPath = request.getContextPath(); // thường là /QuanLyChamCong
+        String fullUrl = request.getScheme() + "://"
+                + // http hoặc https
+                request.getServerName() + ":"
+                + request.getServerPort()
+                + contextPath + "/upload/" + fileName;
+
+        // 3. Gọi DAO để lưu attendance, lưu full URL
         AttendanceDAO dao = new AttendanceDAO();
-        boolean success = dao.saveAttendance(user.getUserId(), action, fileName);
+        boolean success = dao.saveAttendance(user.getUserId(), action, fullUrl);
 
         if (success) {
             session.setAttribute("message", "Chấm công thành công.");
         } else {
-            session.setAttribute("error", " Chấm công thất bại. Vui lòng thử lại.");
+            session.setAttribute("error", "Chấm công thất bại. Vui lòng thử lại.");
         }
 
         response.sendRedirect(request.getContextPath() + "/attendance");
     }
+
 }

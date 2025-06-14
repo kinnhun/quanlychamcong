@@ -85,6 +85,13 @@
                                 <span class="hide-menu">Quản lý đơn xin nghỉ</span>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+    <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/attendance-list">
+        <i data-feather="clock" class="feather-icon"></i>
+        <span class="hide-menu">Quản lý chấm công</span>
+    </a>
+</li>
+
 
 
 

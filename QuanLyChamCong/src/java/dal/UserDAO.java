@@ -360,21 +360,54 @@ public class UserDAO extends DBContext {
         return list;
     }
 
-public boolean updateUser1(int userId, String fullName, String email, String phone) {
-    String sql = "UPDATE users SET full_name = ?, email = ?, phone = ? WHERE user_id = ?";
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+    public boolean updateUser1(int userId, String fullName, String email, String phone) {
+        String sql = "UPDATE users SET full_name = ?, email = ?, phone = ? WHERE user_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        ps.setString(1, fullName);
-        ps.setString(2, email);
-        ps.setString(3, phone);
-        ps.setInt(4, userId);
+            ps.setString(1, fullName);
+            ps.setString(2, email);
+            ps.setString(3, phone);
+            ps.setInt(4, userId);
 
-        return ps.executeUpdate() > 0;
+            return ps.executeUpdate() > 0;
 
-    } catch (Exception e) {
-        e.printStackTrace();
-        return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-}
+
+    public List<Users> getEmployeesByManager(int managerId) {
+        List<Users> list = new ArrayList<>();
+        String sql = """
+        SELECT DISTINCT u.*
+        FROM users u
+        JOIN user_locations ul ON ul.user_id = u.user_id
+        WHERE  u.status = 'active'
+          AND ul.location_id IN (
+              SELECT location_id FROM user_locations WHERE user_id = ?
+          )
+    """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, managerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Users u = new Users();
+                u.setUserId(rs.getInt("user_id"));
+                u.setUsername(rs.getString("username"));
+                u.setFullName(rs.getString("full_name"));
+                u.setEmail(rs.getString("email"));
+                u.setPhone(rs.getString("phone"));
+                u.setRole(rs.getString("role"));
+                u.setStatus(rs.getString("status"));
+                u.setEmploymentType(rs.getString("employment_type"));
+                u.setCreatedAt(rs.getTimestamp("created_at"));
+                list.add(u);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
 }

@@ -15,7 +15,7 @@ import model.Locations;
 
 public class LocationDAO extends DBContext {
 
-    public List<Locations> getAll() {
+    public List<Locations> getAllLocation() {
         List<Locations> list = new ArrayList<>();
         String sql = "SELECT * FROM locations";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -325,11 +325,30 @@ public class LocationDAO extends DBContext {
         }
         return list;
     }
-    public static void main(String[] args) {
-        LocationDAO ldao = new LocationDAO();
-        List<Departments> list = ldao.getDepartmentsByLocation(1);
-        for (Departments departments : list) {
-            System.out.println(departments.toString());
+
+    public List<Departments> getDepartmentsByManager(int managerId) {
+        List<Departments> list = new ArrayList<>();
+        String sql = "SELECT DISTINCT d.* "
+                + "FROM user_locations ul "
+                + "JOIN location_departments ld ON ul.location_id = ld.location_id "
+                + "JOIN departments d ON ld.department_id = d.department_id "
+                + "WHERE ul.user_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, managerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Departments d = new Departments();
+                d.setDepartmentId(rs.getInt("department_id"));
+                d.setDepartmentName(rs.getString("department_name"));
+                d.setDepartmentCode(rs.getString("department_code"));
+                d.setDescription(rs.getString("description"));
+                d.setCreatedAt(rs.getTimestamp("created_at"));
+                list.add(d);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return list;
     }
+
 }

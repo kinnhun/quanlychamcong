@@ -86,12 +86,33 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
-    <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/attendance-list">
-        <i data-feather="clock" class="feather-icon"></i>
-        <span class="hide-menu">Quản lý chấm công</span>
-    </a>
-</li>
+                            <a class="sidebar-link" id="attendance-link" href="#">
+                                <i data-feather="clock" class="feather-icon"></i>
+                                <span class="hide-menu">Quản lý chấm công</span>
+                            </a>
+                        </li>
 
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                var link = document.getElementById("attendance-link");
+                                var today = new Date();
+                                var yyyy = today.getFullYear();
+                                var mm = String(today.getMonth() + 1).padStart(2, '0');
+                                var dd = String(today.getDate()).padStart(2, '0');
+                                var dateString = yyyy + '-' + mm + '-' + dd;
+
+                                // Nếu cần truyền thêm userId, status rỗng thì cứ để ""
+                                var url = '${pageContext.request.contextPath}/manager/attendance-list?userId=&status=&date=' + dateString;
+                                link.href = url;
+                            });
+                        </script>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/user-shifts">
+                                <i data-feather="calendar" class="feather-icon"></i>
+                                <span class="hide-menu">Quản lý phân ca</span>
+                            </a>
+                        </li>
 
 
 

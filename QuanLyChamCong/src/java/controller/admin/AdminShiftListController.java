@@ -18,7 +18,7 @@ public class AdminShiftListController extends HttpServlet {
 
         try {
             ShiftDAO dao = new ShiftDAO();
-            List<Shift> shiftList = dao.getAll();
+            List<Shift> shiftList = dao.getAllShift();
 
             request.setAttribute("shiftList", shiftList);
             request.getRequestDispatcher("/view/admin/shifts.jsp").forward(request, response);

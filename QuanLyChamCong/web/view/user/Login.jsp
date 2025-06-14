@@ -74,7 +74,7 @@
                                     <div class="col-lg-12 text-center mt-4">
                                         <div id="g_id_onload"
                                              data-client_id="20495276859-asgm8cn4636ehlrsktoc6klk7ldujrp5.apps.googleusercontent.com"
-                                             data-login_uri="http://localhost:9999/QuanLyChamCong/oauth2handler"
+                                             data-login_uri="${pageContext.request.contextPath}/oauth2handler"
                                              data-auto_prompt="false"
                                              data-ux_mode="redirect">
                                         </div>

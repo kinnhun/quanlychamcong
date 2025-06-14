@@ -56,7 +56,7 @@ public class AdminLocationListController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         LocationDAO locationDao = new LocationDAO();
-        List<Locations> list = locationDao.getAll();
+        List<Locations> list = locationDao.getAllLocation();
         req.setAttribute("locationList", list);
         req.getRequestDispatcher("/view/admin/location-list.jsp").forward(req, resp);
     }

@@ -64,7 +64,7 @@ public class AdminAssignUserLocationController extends HttpServlet {
         String filterStatus = request.getParameter("status");
         String keyword = request.getParameter("keyword");
 
-        List<Locations> locationList = locationDAO.getAll();
+        List<Locations> locationList = locationDAO.getAllLocation();
         List<Users> userList = userDAO.searchEmployees(filterLocationId, filterRole, filterStatus, keyword);
         List<Object[]> assignmentList = userLocationDAO.searchAssignments(filterLocationId, filterRole, filterStatus, keyword);
 

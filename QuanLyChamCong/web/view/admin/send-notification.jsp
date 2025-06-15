@@ -69,7 +69,8 @@
                             </form>
                             <!-- End filter form -->
 
-                            <form method="post" action="${pageContext.request.contextPath}/admin/send-notification">
+                            <!-- Form gửi thông báo với upload file -->
+                            <form method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/admin/send-notification">
                                 <div class="mb-3">
                                     <label class="form-label">Chọn người nhận</label>
                                     <div class="table-responsive table-scroll">
@@ -128,12 +129,14 @@
                                     <textarea class="form-control" name="content" rows="5" required></textarea>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Ảnh (URL - tuỳ chọn)</label>
-                                    <input type="text" class="form-control" name="imageUrl">
+                                    <label class="form-label">Ảnh (chọn file hoặc nhập URL)</label>
+                                    <input type="file" class="form-control" name="imageFile">
+                                    <input type="text" class="form-control mt-1" name="imageUrl" placeholder="Hoặc nhập URL nếu đã có">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">File đính kèm (URL - tuỳ chọn)</label>
-                                    <input type="text" class="form-control" name="fileUrl">
+                                    <label class="form-label">File đính kèm (chọn file hoặc nhập URL)</label>
+                                    <input type="file" class="form-control" name="attachFile">
+                                    <input type="text" class="form-control mt-1" name="fileUrl" placeholder="Hoặc nhập URL nếu đã có">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Thời gian gửi (nếu muốn hẹn giờ)</label>

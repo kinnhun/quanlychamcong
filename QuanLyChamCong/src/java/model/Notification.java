@@ -9,15 +9,16 @@ public class Notification {
     private String content;
     private String imageUrl;
     private String fileUrl;
-    private int createdBy;
+    private Users createdBy;
     private Timestamp createdAt;
     private Timestamp scheduledTime;
     private String status;
+    
 
     public Notification() {
     }
 
-    public Notification(int notificationId, String title, String content, String imageUrl, String fileUrl, int createdBy, Timestamp createdAt, Timestamp scheduledTime, String status) {
+    public Notification(int notificationId, String title, String content, String imageUrl, String fileUrl, Users createdBy, Timestamp createdAt, Timestamp scheduledTime, String status) {
         this.notificationId = notificationId;
         this.title = title;
         this.content = content;
@@ -29,7 +30,7 @@ public class Notification {
         this.status = status;
     }
 
-    // Getters and setters...
+   
     public int getNotificationId() {
         return notificationId;
     }
@@ -60,12 +61,15 @@ public class Notification {
     public void setFileUrl(String fileUrl) {
         this.fileUrl = fileUrl;
     }
-    public int getCreatedBy() {
+
+    public Users getCreatedBy() {
         return createdBy;
     }
-    public void setCreatedBy(int createdBy) {
+
+    public void setCreatedBy(Users createdBy) {
         this.createdBy = createdBy;
     }
+   
     public Timestamp getCreatedAt() {
         return createdAt;
     }

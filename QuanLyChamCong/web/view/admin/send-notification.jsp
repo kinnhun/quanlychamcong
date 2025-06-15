@@ -31,9 +31,13 @@
                     <c:import url="/view/compomnt/notification.jsp" />
 
                     <div class="card mt-4">
-                        <div class="card-header">
-                            <h4>Gửi Thông Báo Đến Người Dùng</h4>
-                        </div>
+                       <div class="card-header d-flex justify-content-between align-items-center">
+    <h4>Gửi Thông Báo Đến Người Dùng</h4>
+    <a href="${pageContext.request.contextPath}/admin/notification-list" class="btn btn-outline-success">
+        <i class="fa fa-list"></i> Danh sách đã gửi
+    </a>
+</div>
+
                         <div class="card-body">
                             <!-- Filter form -->
                             <form method="get" action="${pageContext.request.contextPath}/admin/send-notification" class="mb-3">

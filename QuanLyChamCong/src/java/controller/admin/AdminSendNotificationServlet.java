@@ -2,6 +2,7 @@ package controller.admin;
 
 import dal.LocationDAO;
 import dal.NotificationDAO;
+import dal.UserDAO;
 import dal.UserLocationDAO;
 import model.Notification;
 import model.NotificationReceiver;
@@ -104,7 +105,9 @@ public class AdminSendNotificationServlet extends HttpServlet {
         noti.setContent(content);
         noti.setImageUrl(imageUrl);
         noti.setFileUrl(fileUrl);
-        noti.setCreatedBy(createdBy);
+        UserDAO udao = new UserDAO();
+
+        noti.setCreatedBy(udao.getUserById(createdBy));
         noti.setStatus("active");
 
         if (scheduledTimeStr != null && !scheduledTimeStr.isEmpty()) {

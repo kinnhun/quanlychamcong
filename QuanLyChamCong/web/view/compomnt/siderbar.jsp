@@ -82,6 +82,12 @@
                             </a>
                         </li>
 
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="${pageContext.request.contextPath}/admin/send-notification">
+                                <i data-feather="bell" class="feather-icon"></i>
+                                <span class="hide-menu"> Gửi thông báo</span>
+                            </a>
+                        </li>
 
 
                         <p>Manager</p>

@@ -7,6 +7,7 @@ import model.Users;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import model.UserLocations;
 
 public class UserDAO extends DBContext {
 
@@ -409,5 +410,9 @@ public class UserDAO extends DBContext {
         }
         return list;
     }
+
+   
+    
+  
 
 }

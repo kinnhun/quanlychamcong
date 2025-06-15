@@ -9,14 +9,16 @@ public class LeaveType {
     private int leaveTypeId;
     private String leaveTypeName;
     private String status;
+    private int noticeDays;
 
     public LeaveType() {
     }
 
-    public LeaveType(int leaveTypeId, String leaveTypeName, String status) {
+    public LeaveType(int leaveTypeId, String leaveTypeName, String status, int noticeDays) {
         this.leaveTypeId = leaveTypeId;
         this.leaveTypeName = leaveTypeName;
         this.status = status;
+        this.noticeDays = noticeDays;
     }
 
     public String getStatus() {
@@ -26,8 +28,6 @@ public class LeaveType {
     public void setStatus(String status) {
         this.status = status;
     }
-
- 
 
     public int getLeaveTypeId() {
         return leaveTypeId;
@@ -45,10 +45,17 @@ public class LeaveType {
         this.leaveTypeName = leaveTypeName;
     }
 
-    @Override
-    public String toString() {
-        return "LeaveType{" + "leaveTypeId=" + leaveTypeId + ", leaveTypeName=" + leaveTypeName + ", status=" + status + '}';
+    public int getNoticeDays() {
+        return noticeDays;
     }
 
+    public void setNoticeDays(int noticeDays) {
+        this.noticeDays = noticeDays;
+    }
+
+    @Override
+    public String toString() {
+        return "LeaveType{" + "leaveTypeId=" + leaveTypeId + ", leaveTypeName=" + leaveTypeName + ", status=" + status + ", noticeDays=" + noticeDays + '}';
+    }
 
 }

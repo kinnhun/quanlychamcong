@@ -75,6 +75,12 @@
                                 <span class="hide-menu">Cấu hình ngày phép</span>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="${pageContext.request.contextPath}/admin/holiday-dates">
+                                <i data-feather="calendar" class="feather-icon"></i>
+                                <span class="hide-menu"> CNgày nghỉ lễ</span>
+                            </a>
+                        </li>
 
 
 

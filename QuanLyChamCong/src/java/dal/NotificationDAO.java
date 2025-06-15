@@ -202,4 +202,42 @@ public class NotificationDAO extends DBContext {
         return false;
     }
 
+    public List<Notification> getNotificationsByReceiver(int userId, int limit) {
+        List<Notification> list = new ArrayList<>();
+        String sql = "SELECT n.*, r.status AS receiver_status FROM notification_receivers r "
+                + "JOIN notifications n ON r.notification_id = n.notification_id "
+                + "WHERE r.user_id = ? "
+                + "AND n.status = 'active' "
+                + "AND (n.scheduled_time IS NULL OR n.scheduled_time <= GETDATE()) "
+                + "ORDER BY n.created_at DESC OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, limit);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Notification n = new Notification();
+                n.setNotificationId(rs.getInt("notification_id"));
+                n.setTitle(rs.getString("title"));
+                n.setContent(rs.getString("content"));
+                n.setImageUrl(rs.getString("image_url"));
+                n.setFileUrl(rs.getString("file_url"));
+                n.setCreatedAt(rs.getTimestamp("created_at"));
+                n.setScheduledTime(rs.getTimestamp("scheduled_time"));
+                n.setStatus(rs.getString("receiver_status")); 
+                list.add(n);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
+    public static void main(String[] args) {
+        NotificationDAO ndao = new NotificationDAO();
+         List<Notification> list = ndao.getNotificationsByReceiver(1,10);
+        for (Notification notification : list) {
+            System.out.println(notification.toString());
+        }
+    }
+
 }

@@ -78,7 +78,7 @@
                         <li class="sidebar-item">
                             <a class="sidebar-link" href="${pageContext.request.contextPath}/admin/holiday-dates">
                                 <i data-feather="calendar" class="feather-icon"></i>
-                                <span class="hide-menu"> CNgày nghỉ lễ</span>
+                                <span class="hide-menu"> Ngày nghỉ lễ</span>
                             </a>
                         </li>
 

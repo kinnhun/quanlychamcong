@@ -140,5 +140,23 @@ public class HolidayDateDAO extends DBContext {
         }
         return list;
     }
+    
+    public boolean isDuplicateHoliday(String name, Date date, int year) {
+    String sql = "SELECT COUNT(*) FROM holiday_dates WHERE holiday_name = ? AND holiday_date = ? AND year = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, name);
+        ps.setDate(2, date);
+        ps.setInt(3, year);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
 
 }

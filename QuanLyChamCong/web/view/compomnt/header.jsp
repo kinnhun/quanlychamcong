@@ -248,6 +248,17 @@
                 text-decoration: underline;
                 background: none !important;
             }
+            /* Nền nổi bật cho thông báo chưa đọc */
+            .message-center.notifications .message-item.unread {
+                background: #eaf3ff !important; /* xanh nhạt, đổi thành màu khác tùy ý (#fffbe5 cho vàng nhạt) */
+                border-left: 5px solid #297fff !important;
+                box-shadow: 0 2px 10px 0 rgba(41,127,255,0.07);
+            }
+            .message-center.notifications .message-item.unread:hover {
+                background: #d6eaff !important;
+                box-shadow: 0 2px 14px 0 rgba(41,127,255,0.12);
+            }
+
 
         </style>
     </head>
@@ -367,6 +378,7 @@
                         type: 'GET',
                         dataType: 'json',
                         success: function (data) {
+                            console.log(data)
                             // Update notification count
                             $('#notification-count').text(data.length);
 
@@ -385,10 +397,11 @@
                                     // Determine icon and color based on receiverStatus
                                     var iconClass = notification.receiverStatus === 'unread' ? 'btn-danger' : 'btn-success';
                                     var iconType = notification.receiverStatus === 'unread' ? 'bell' : 'check';
+                                    var unreadClass = notification.receiverStatus === 'unread' ? 'unread' : '';
 
                                     // Append notification item
                                     $('#notification-list').append(
-                                            '<a href="javascript:void(0)" class="message-item d-flex align-items-center border-bottom px-3 py-2">' +
+                                            '<a href="javascript:void(0)" class="message-item d-flex align-items-center border-bottom px-3 py-2 ' + unreadClass + '">' +
                                             '<div class="btn ' + iconClass + ' rounded-circle btn-circle"><i data-feather="' + iconType + '" class="text-white"></i></div>' +
                                             '<div class="w-75 d-inline-block v-middle pl-2">' +
                                             '<h6 class="message-title mb-0 mt-1">' + notification.title + '</h6>' +
@@ -398,6 +411,7 @@
                                             '</a>'
                                             );
                                 });
+
                             }
 
                             // Re-initialize feather icons after DOM update

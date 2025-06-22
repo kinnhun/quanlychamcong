@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet(name = "NotificationUserApiServlet", urlPatterns = {"/NotificationUserApiServlet"})
 public class NotificationUserApiServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -23,17 +24,19 @@ public class NotificationUserApiServlet extends HttpServlet {
             return;
         }
         NotificationDAO dao = new NotificationDAO();
-        List<Notification> list = dao.getNotificationsByReceiver(user.getUserId(), 10);
+        List<Notification> list = dao.getNotificationsByReceiver(user.getUserId(), 100);
         StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < list.size(); i++) {
             Notification n = list.get(i);
-            if (i > 0) sb.append(",");
+            if (i > 0) {
+                sb.append(",");
+            }
             sb.append("{")
-                .append("\"title\":\"").append(escapeJson(n.getTitle())).append("\",")
-                .append("\"content\":\"").append(escapeJson(n.getContent())).append("\",")
-                .append("\"createdAt\":\"").append(n.getCreatedAt()).append("\",")
-                .append("\"receiverStatus\":\"").append(escapeJson(n.getStatus())).append("\"")
-                .append("}");
+                    .append("\"title\":\"").append(escapeJson(n.getTitle())).append("\",")
+                    .append("\"content\":\"").append(escapeJson(n.getContent())).append("\",")
+                    .append("\"createdAt\":\"").append(n.getCreatedAt()).append("\",")
+                    .append("\"receiverStatus\":\"").append(escapeJson(n.getStatus())).append("\"")
+                    .append("}");
         }
         sb.append("]");
         response.getWriter().write(sb.toString());

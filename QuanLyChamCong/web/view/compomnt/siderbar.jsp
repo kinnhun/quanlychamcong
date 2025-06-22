@@ -153,6 +153,16 @@
                                 <span class="hide-menu">Chấm công</span>
                             </a>
                         </li>
+
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/employee/disputes">
+                                <i data-feather="alert-circle" class="feather-icon"></i>
+                                <span class="hide-menu">Khiếu nại chấm công</span>
+                            </a>
+                        </li>
+
+
                         <li class="sidebar-item">
                             <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/logout">
                                 <i data-feather="log-out" class="feather-icon"></i>

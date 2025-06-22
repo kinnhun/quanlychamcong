@@ -26,6 +26,7 @@ public class AttendanceDAO extends DBContext {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 Attendance a = new Attendance();
+                a.setAttendanceId(rs.getInt("attendance_id"));
                 a.setCheckinTime(rs.getTimestamp("checkin_time"));
                 a.setCheckoutTime(rs.getTimestamp("checkout_time"));
                 a.setCheckinImageUrl(rs.getString("checkin_image_url"));
@@ -322,5 +323,53 @@ public class AttendanceDAO extends DBContext {
         }
         return list;
     }
+
+   public Attendance getAttendanceById(int attendanceId) {
+    String sql = """
+        SELECT attendance_id, user_id, date, checkin_time, checkout_time, location_id, 
+               checkin_image_url, checkout_image_url, is_locked, created_at
+        FROM attendance
+        WHERE attendance_id = ?
+    """;
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, attendanceId);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                Attendance att = new Attendance();
+                att.setAttendanceId(rs.getInt("attendance_id"));
+                // User
+                Users user = new Users();
+                user.setUserId(rs.getInt("user_id"));
+                att.setUser(user);
+                // Date, Time
+                att.setDate(rs.getDate("date"));
+                att.setCheckinTime(rs.getTimestamp("checkin_time"));
+                att.setCheckoutTime(rs.getTimestamp("checkout_time"));
+                // Location
+                Locations loc = new Locations();
+                loc.setId(rs.getInt("location_id"));
+                att.setLocation(loc);
+                att.setCheckinImageUrl(rs.getString("checkin_image_url"));
+                att.setCheckoutImageUrl(rs.getString("checkout_image_url"));
+                att.setIsLocked(rs.getBoolean("is_locked"));
+                att.setCreatedAt(rs.getTimestamp("created_at"));
+                return att;
+            }
+        }
+    } catch (Exception ex) {
+        ex.printStackTrace();
+    }
+    return null;
+}
+public static void main(String[] args) {
+    AttendanceDAO dao = new AttendanceDAO();
+    Attendance att = dao.getAttendanceById(13); 
+
+    if (att != null) {
+        System.out.println("Attendance found: " + att);
+    } else {
+        System.out.println("Attendance not found");
+    }
+}
 
 }

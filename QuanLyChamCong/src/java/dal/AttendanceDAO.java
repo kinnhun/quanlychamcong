@@ -373,4 +373,183 @@ public class AttendanceDAO extends DBContext {
         }
     }
 
+    public List<Attendance> getAttendanceByUser(int userId) {
+        List<Attendance> list = new ArrayList<>();
+        String sql = """
+        SELECT attendance_id, user_id, date, checkin_time, checkout_time, location_id, 
+               checkin_image_url, checkout_image_url, is_locked, created_at
+        FROM attendance
+        WHERE user_id = ?
+        ORDER BY date DESC
+    """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Attendance att = new Attendance();
+                att.setAttendanceId(rs.getInt("attendance_id"));
+
+                // User
+                Users user = new Users();
+                user.setUserId(rs.getInt("user_id"));
+                att.setUser(user);
+
+                // Date, Time
+                att.setDate(rs.getDate("date"));
+                att.setCheckinTime(rs.getTimestamp("checkin_time"));
+                att.setCheckoutTime(rs.getTimestamp("checkout_time"));
+
+                // Location
+                LocationDAO ldao = new LocationDAO();
+                Locations loc = ldao.getLocationById(rs.getInt("location_id"));
+                att.setLocation(loc);
+
+                // Images
+                att.setCheckinImageUrl(rs.getString("checkin_image_url"));
+                att.setCheckoutImageUrl(rs.getString("checkout_image_url"));
+
+                // Locked, createdAt
+                att.setIsLocked(rs.getBoolean("is_locked"));
+                att.setCreatedAt(rs.getTimestamp("created_at"));
+
+                list.add(att);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return list;
+    }
+
+        // Lấy danh sách các địa điểm mà user này từng chấm công
+    public List<Locations> getAllLocationsByUser(int userId) {
+        List<Locations> list = new ArrayList<>();
+        String sql = """
+            SELECT DISTINCT l.location_id, l.name, l.address
+            FROM attendance a
+            JOIN locations l ON a.location_id = l.location_id
+            WHERE a.user_id = ?
+            ORDER BY l.name
+        """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Locations loc = new Locations();
+                loc.setId(rs.getInt("location_id"));
+                loc.setName(rs.getString("name"));
+                loc.setAddress(rs.getString("address"));
+                list.add(loc);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return list;
+    }
+
+    // Đếm số dòng theo các filter (dùng cho phân trang)
+    public int countAttendanceByUserFilter(int userId, String status, String date, int locationId) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT COUNT(*) FROM attendance
+            WHERE user_id = ?
+        """);
+        List<Object> params = new ArrayList<>();
+        params.add(userId);
+
+        if (status != null && !status.isEmpty()) {
+            if (status.equals("locked")) {
+                sql.append(" AND is_locked = 1 ");
+            } else if (status.equals("unlocked")) {
+                sql.append(" AND is_locked = 0 ");
+            }
+        }
+        if (date != null && !date.isEmpty()) {
+            sql.append(" AND date = ? ");
+            params.add(Date.valueOf(date));
+        }
+        if (locationId > 0) {
+            sql.append(" AND location_id = ? ");
+            params.add(locationId);
+        }
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
+    // Lấy danh sách chấm công đã lọc + phân trang
+    public List<Attendance> getAttendanceByUserFilter(int userId, String status, String date, int locationId, int page, int pageSize) {
+        List<Attendance> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("""
+            SELECT attendance_id, user_id, date, checkin_time, checkout_time, location_id, 
+                   checkin_image_url, checkout_image_url, is_locked, created_at
+            FROM attendance
+            WHERE user_id = ?
+        """);
+        List<Object> params = new ArrayList<>();
+        params.add(userId);
+
+        if (status != null && !status.isEmpty()) {
+            if (status.equals("locked")) {
+                sql.append(" AND is_locked = 1 ");
+            } else if (status.equals("unlocked")) {
+                sql.append(" AND is_locked = 0 ");
+            }
+        }
+        if (date != null && !date.isEmpty()) {
+            sql.append(" AND date = ? ");
+            params.add(Date.valueOf(date));
+        }
+        if (locationId > 0) {
+            sql.append(" AND location_id = ? ");
+            params.add(locationId);
+        }
+        sql.append(" ORDER BY date DESC ");
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
+        int offset = (page - 1) * pageSize;
+        params.add(offset);
+        params.add(pageSize);
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            LocationDAO ldao = new LocationDAO();
+            while (rs.next()) {
+                Attendance att = new Attendance();
+                att.setAttendanceId(rs.getInt("attendance_id"));
+                // User
+                Users user = new Users();
+                user.setUserId(rs.getInt("user_id"));
+                att.setUser(user);
+                // Date, Time
+                att.setDate(rs.getDate("date"));
+                att.setCheckinTime(rs.getTimestamp("checkin_time"));
+                att.setCheckoutTime(rs.getTimestamp("checkout_time"));
+                // Location
+                Locations loc = ldao.getLocationById(rs.getInt("location_id"));
+                att.setLocation(loc);
+                // Images
+                att.setCheckinImageUrl(rs.getString("checkin_image_url"));
+                att.setCheckoutImageUrl(rs.getString("checkout_image_url"));
+                // Locked, createdAt
+                att.setIsLocked(rs.getBoolean("is_locked"));
+                att.setCreatedAt(rs.getTimestamp("created_at"));
+                list.add(att);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return list;
+    }
+
+
 }

@@ -161,7 +161,12 @@
                                 <span class="hide-menu">Khiếu nại chấm công</span>
                             </a>
                         </li>
-
+                        <li class="sidebar-item">
+                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/employee/attendance">
+                                <i data-feather="calendar" class="feather-icon"></i>
+                                <span class="hide-menu">Danh sách chấm công</span>
+                            </a>
+                        </li>
 
                         <li class="sidebar-item">
                             <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/logout">

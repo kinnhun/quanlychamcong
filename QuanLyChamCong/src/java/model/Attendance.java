@@ -19,11 +19,12 @@ public class Attendance {
     private String checkoutImageUrl;
     private boolean isLocked;
     private Timestamp createdAt;
+    private String status;
 
     public Attendance() {
     }
 
-    public Attendance(int attendanceId, Users user, Date date, Timestamp checkinTime, Timestamp checkoutTime, Locations location, String checkinImageUrl, String checkoutImageUrl, boolean isLocked, Timestamp createdAt) {
+    public Attendance(int attendanceId, Users user, Date date, Timestamp checkinTime, Timestamp checkoutTime, Locations location, String checkinImageUrl, String checkoutImageUrl, boolean isLocked, Timestamp createdAt, String status) {
         this.attendanceId = attendanceId;
         this.user = user;
         this.date = date;
@@ -34,6 +35,15 @@ public class Attendance {
         this.checkoutImageUrl = checkoutImageUrl;
         this.isLocked = isLocked;
         this.createdAt = createdAt;
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public int getAttendanceId() {
@@ -118,7 +128,7 @@ public class Attendance {
 
     @Override
     public String toString() {
-        return "Attendance{" + "attendanceId=" + attendanceId + ", user=" + user + ", date=" + date + ", checkinTime=" + checkinTime + ", checkoutTime=" + checkoutTime + ", location=" + location + ", checkinImageUrl=" + checkinImageUrl + ", checkoutImageUrl=" + checkoutImageUrl + ", isLocked=" + isLocked + ", createdAt=" + createdAt + '}';
+        return "Attendance{" + "attendanceId=" + attendanceId + ", user=" + user + ", date=" + date + ", checkinTime=" + checkinTime + ", checkoutTime=" + checkoutTime + ", location=" + location + ", checkinImageUrl=" + checkinImageUrl + ", checkoutImageUrl=" + checkoutImageUrl + ", isLocked=" + isLocked + ", createdAt=" + createdAt + ", status=" + status + '}';
     }
 
 }

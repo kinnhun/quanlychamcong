@@ -41,6 +41,7 @@ public class AttendanceDAO extends DBContext {
 
     public boolean saveAttendance(int userId, String action, String fileName) {
         LocalDate today = LocalDate.now();
+        
         Timestamp now = new Timestamp(System.currentTimeMillis());
 
         String selectSql = "SELECT * FROM attendance WHERE user_id = ? AND date = ?";
@@ -489,7 +490,7 @@ public class AttendanceDAO extends DBContext {
         List<Attendance> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("""
             SELECT attendance_id, user_id, date, checkin_time, checkout_time, location_id, 
-                   checkin_image_url, checkout_image_url, is_locked, created_at
+                   checkin_image_url, checkout_image_url, is_locked, created_at,status
             FROM attendance
             WHERE user_id = ?
         """);
@@ -543,6 +544,7 @@ public class AttendanceDAO extends DBContext {
                 // Locked, createdAt
                 att.setIsLocked(rs.getBoolean("is_locked"));
                 att.setCreatedAt(rs.getTimestamp("created_at"));
+                att.setStatus(rs.getString("status"));
                 list.add(att);
             }
         } catch (Exception ex) {

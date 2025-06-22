@@ -86,7 +86,7 @@ public class EmployeeDisputeSubmitServlet extends HttpServlet {
         AttendanceDispute dispute = new AttendanceDispute();
         // Nếu dùng attendanceId là int
         AttendanceDAO adao = new AttendanceDAO();
-        Attendance aa= adao.getAttendanceById(attendanceId);
+        Attendance aa = adao.getAttendanceById(attendanceId);
         dispute.setAttendanceId(aa);
 
         dispute.setUserId(user.getUserId());

@@ -3,156 +3,116 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
-    <head>
-        <title>Danh sách chấm công</title>
-        <link href="${pageContext.request.contextPath}/view/lib/dist/css/style.min.css" rel="stylesheet">
-        <style>
+<head>
+    <title>Danh sách chấm công từng người</title>
+    <link href="${pageContext.request.contextPath}/view/lib/dist/css/style.min.css" rel="stylesheet">
+    <style>
+        .filter-form {
+            background: #fff;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        .filter-form label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 6px;
+        }
+        .filter-form select {
+            min-width: 180px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .report-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .report-card .report-item {
+            display: inline-block;
+            margin: 0 15px;
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .table-responsive {
+            margin-bottom: 20px;
+        }
+        @media (max-width: 768px) {
             .filter-form {
-                background: #fff;
-                border-radius: 10px;
-                margin-bottom: 16px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-                padding: 18px 24px 0 24px;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 30px 18px;
-                align-items: end;
+                flex-direction: column;
+                align-items: stretch;
             }
-            .filter-form label {
-                font-weight: 600;
-                color: #4b5675;
-                margin-bottom: 5px;
+            .report-card .report-item {
+                display: block;
+                margin: 10px 0;
             }
-            .filter-form select, .filter-form input[type="date"] {
-                min-width: 160px;
-                border-radius: 6px;
-                border: 1px solid #ddd;
-                padding: 7px 12px;
-            }
-            .filter-form .btn {
-                border-radius: 6px;
-            }
-            .filter-form {
-                background: linear-gradient(135deg, #ffffff, #f8f9fa); /* Gradient nền nhẹ */
-                border-radius: 12px;
-                margin-bottom: 20px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Bóng đổ tinh tế */
-                padding: 20px 24px;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 20px 15px; /* Khoảng cách giữa các phần tử */
-                align-items: flex-end;
-                border: 1px solid #e9ecef; /* Viền nhẹ */
-            }
+        }
+    </style>
+</head>
+<body>
+    <div id="main-wrapper" data-theme="light" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+         data-sidebar-position="fixed" data-header-position="fixed" data-boxed-layout="full">
 
-            .filter-form label {
-                font-weight: 600;
-                color: #495057; /* Màu chữ đậm hơn */
-                margin-bottom: 6px;
-                display: block; /* Đảm bảo label nằm trên input */
-                font-size: 14px;
-            }
+        <!-- Import header -->
+        <c:import url="/view/compomnt/header.jsp" />
 
-            .filter-form select, .filter-form input[type="date"] {
-                min-width: 180px;
-                max-width: 220px;
-                border-radius: 8px;
-                border: 1px solid #ced4da;
-                padding: 8px 12px;
-                font-size: 14px;
-                transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng mượt */
-            }
+        <!-- Import sidebar -->
+        <c:import url="/view/compomnt/siderbar.jsp" />
 
-            .filter-form select:focus, .filter-form input[type="date"]:focus {
-                border-color: #007bff; /* Màu viền khi focus */
-                box-shadow: 0 0 5px rgba(0, 123, 255, 0.3); /* Đổ bóng khi focus */
-                outline: none; /* Loại bỏ outline mặc định */
-            }
+        <div class="page-wrapper">
+            <div class="container-fluid">
+                <!-- Thông báo -->
+                <c:import url="/view/compomnt/notification.jsp" />
 
-            .filter-form .btn {
-                border-radius: 8px;
-                padding: 8px 20px;
-                font-weight: 600;
-                background-color: #007bff; /* Màu nền nút */
-                border: none;
-                color: #fff;
-                transition: background-color 0.3s ease, transform 0.2s ease; /* Hiệu ứng chuyển đổi */
-            }
+                <!-- Tiêu đề và nội dung -->
+                <h3 class="mb-4 text-primary fw-bold fs-3">📊 Danh sách chấm công từng người</h3>
 
-            .filter-form .btn:hover {
-                background-color: #0056b3; /* Màu nền khi hover */
-                transform: translateY(-1px); /* Nâng nút lên nhẹ */
-            }
-
-            .filter-form .btn:active {
-                transform: translateY(0); /* Trở về vị trí ban đầu khi click */
-            }
-
-            /* Responsive */
-            @media (max-width: 768px) {
-                .filter-form {
-                    padding: 15px;
-                    gap: 15px 10px;
-                }
-                .filter-form select, .filter-form input[type="date"] {
-                    min-width: 150px;
-                    max-width: 100%;
-                }
-                .filter-form .btn {
-                    width: 100%;
-                    margin-top: 10px;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div id="main-wrapper" data-theme="light" data-layout="vertical" data-navbarbg="skin6"
-             data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed" data-boxed-layout="full">
-
-            <c:import url="/view/compomnt/header.jsp" />
-            <c:import url="/view/compomnt/siderbar.jsp" />
-
-            <div class="page-wrapper">
-                <div class="container-fluid">
-                    <c:import url="/view/compomnt/notification.jsp" />
-
-                    <h3 class="mb-4 text-primary fw-bold fs-3">📊 Danh sách chấm công nhân viên</h3>
-                    <div class="mb-4">
-                        <a href="${pageContext.request.contextPath}/manager/attendance-select" class="btn btn-info px-3">Xem từng người</a>
+                <!-- FILTER FORM -->
+                <form method="get" class="filter-form" action="${pageContext.request.contextPath}/manager/attendance-each-employee">
+                    <div>
+                        <label>Nhân viên:</label>
+                        <select name="userId" class="form-select" onchange="this.form.submit()">
+                            <option value="">-- Chọn nhân viên --</option>
+                            <c:forEach var="emp" items="${employeeList}">
+                                <option value="${emp.userId}" <c:if test="${selectedUserId eq emp.userId}">selected</c:if>>
+                                    ${emp.fullName}
+                                </option>
+                            </c:forEach>
+                        </select>
                     </div>
+                    <div>
+                        <input type="hidden" name="page" value="1" />
+                    </div>
+                </form>
 
-                    <!-- FILTER FORM -->
-                    <form method="get" class="filter-form" action="${pageContext.request.contextPath}/manager/attendance-list">
-                        <div>
-                            <label>Nhân viên:</label>
-                            <select name="userId" class="form-select">
-                                <option value="">-- Tất cả --</option>
-                                <c:forEach var="emp" items="${employeeList}">
-                                    <option value="${emp.userId}" <c:if test="${selectedUserId eq emp.userId}">selected</c:if>>
-                                        ${emp.fullName}
-                                    </option>
-                                </c:forEach>
-                            </select>
+                <!-- BÁO CÁO TỔNG SỐ -->
+                <c:if test="${not empty selectedUserId}">
+                    <div class="report-card">
+                        <h4>Báo cáo tổng số</h4>
+                        <div class="report-item">
+                            <strong>Ngày làm:</strong> ${totalWorkingDays}
                         </div>
-                        <div>
-                            <label>Trạng thái:</label>
-                            <select name="status" class="form-select">
-                                <option value="">-- Tất cả --</option>
-                                <option value="present" ${selectedStatus eq 'present' ? 'selected' : ''}>Đủ công</option>
-                                <option value="absent" ${selectedStatus eq 'absent' ? 'selected' : ''}>Vắng</option>
-                                <option value="partial" ${selectedStatus eq 'partial' ? 'selected' : ''}>Thiếu</option>
-                            </select>
+                        <div class="report-item">
+                            <strong>Ngày vắng:</strong> ${totalAbsentDays}
                         </div>
-                        <div>
-                            <label>Ngày:</label>
-                            <input type="date" name="date" value="${selectedDate}" class="form-control"/>
+                        <div class="report-item">
+                            <strong>Ngày đi muộn:</strong> ${totalLateDays}
                         </div>
-                        <div>
-                            <button type="submit" class="btn btn-primary px-3">Lọc</button>
-                        </div>
-                    </form>
+                    </div>
+                </c:if>
 
-                    <!-- BẢNG -->
+                <!-- BẢNG CHẤM CÔNG CÁ NHÂN -->
+                <c:if test="${not empty attendanceList}">
                     <div class="table-responsive shadow-sm bg-white p-4 rounded">
                         <table class="table table-hover table-bordered text-center align-middle rounded">
                             <thead class="table-light">
@@ -233,7 +193,6 @@
                                                 </c:otherwise>
                                             </c:choose>
                                         </td>
-
                                         <td>
                                             <c:choose>
                                                 <c:when test="${a.isLocked}">
@@ -257,55 +216,59 @@
                             </tbody>
                         </table>
                     </div>
-                    <style>
-                        .badge-present {
-                            background: #e4f8e8;
-                            color: #357a38;
-                            border-radius: 20px;
-                            font-weight: 600;
-                            padding: 7px 18px;
-                            font-size: 14px;
-                        }
-                        .badge-partial {
-                            background: #fffbe5;
-                            color: #b79820;
-                            border-radius: 20px;
-                            font-weight: 600;
-                            padding: 7px 18px;
-                            font-size: 14px;
-                        }
-                        .badge-absent {
-                            background: #fde6e6;
-                            color: #c0392b;
-                            border-radius: 20px;
-                            font-weight: 600;
-                            padding: 7px 18px;
-                            font-size: 14px;
-                        }
-                    </style>
 
                     <!-- PAGINATION -->
                     <nav class="mt-3 mb-3">
                         <ul class="pagination justify-content-center">
                             <li class="page-item <c:if test='${currentPage == 1}'>disabled</c:if>">
-                                <a class="page-link" href="?userId=${selectedUserId}&status=${selectedStatus}&date=${selectedDate}&page=${currentPage - 1}">&laquo;</a>
+                                <a class="page-link" href="?userId=${selectedUserId}&page=${currentPage - 1}">«</a>
                             </li>
                             <c:forEach begin="1" end="${totalPages}" var="i">
                                 <li class="page-item <c:if test='${i == currentPage}'>active</c:if>">
-                                    <a class="page-link" href="?userId=${selectedUserId}&status=${selectedStatus}&date=${selectedDate}&page=${i}">${i}</a>
+                                    <a class="page-link" href="?userId=${selectedUserId}&page=${i}">${i}</a>
                                 </li>
                             </c:forEach>
                             <li class="page-item <c:if test='${currentPage == totalPages}'>disabled</c:if>">
-                                <a class="page-link" href="?userId=${selectedUserId}&status=${selectedStatus}&date=${selectedDate}&page=${currentPage + 1}">&raquo;</a>
+                                <a class="page-link" href="?userId=${selectedUserId}&page=${currentPage + 1}">»</a>
                             </li>
                         </ul>
                         <div class="text-end text-muted">
                             Tổng số bản ghi: <strong>${totalRecords}</strong>
                         </div>
                     </nav>
-                </div>
+                </c:if>
+
+              
             </div>
-            <c:import url="/view/compomnt/footer.jsp" />
         </div>
-    </body>
+    </div>
+
+    <c:import url="/view/compomnt/footer.jsp"/>
+    <style>
+        .badge-present {
+            background: #e4f8e8;
+            color: #357a38;
+            border-radius: 20px;
+            font-weight: 600;
+            padding: 7px 18px;
+            font-size: 14px;
+        }
+        .badge-partial {
+            background: #fffbe5;
+            color: #b79820;
+            border-radius: 20px;
+            font-weight: 600;
+            padding: 7px 18px;
+            font-size: 14px;
+        }
+        .badge-absent {
+            background: #fde6e6;
+            color: #c0392b;
+            border-radius: 20px;
+            font-weight: 600;
+            padding: 7px 18px;
+            font-size: 14px;
+        }
+    </style>
+</body>
 </html>

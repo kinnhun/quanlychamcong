@@ -553,5 +553,192 @@ public class AttendanceDAO extends DBContext {
         return list;
     }
 
+    //-------------
+    public List<Attendance> getAttendanceByUserId(Integer selectedUserId, int currentPage, int pageSize) {
+        List<Attendance> list = new ArrayList<>();
+        String sql = """
+            SELECT attendance_id, user_id, date, checkin_time, checkout_time, location_id, 
+                   checkin_image_url, checkout_image_url, is_locked, created_at, status
+            FROM attendance
+            WHERE user_id = ?
+            ORDER BY date DESC
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+        """;
+        int offset = (currentPage - 1) * pageSize;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, selectedUserId);
+            ps.setInt(2, offset);
+            ps.setInt(3, pageSize);
+            ResultSet rs = ps.executeQuery();
+            LocationDAO ldao = new LocationDAO();
+            while (rs.next()) {
+                Attendance att = new Attendance();
+                att.setAttendanceId(rs.getInt("attendance_id"));
+                Users user = new Users();
+                user.setUserId(rs.getInt("user_id"));
+                att.setUser(user);
+                att.setDate(rs.getDate("date"));
+                att.setCheckinTime(rs.getTimestamp("checkin_time"));
+                att.setCheckoutTime(rs.getTimestamp("checkout_time"));
+                Locations loc = ldao.getLocationById(rs.getInt("location_id"));
+                att.setLocation(loc);
+                att.setCheckinImageUrl(rs.getString("checkin_image_url"));
+                att.setCheckoutImageUrl(rs.getString("checkout_image_url"));
+                att.setIsLocked(rs.getBoolean("is_locked"));
+                att.setCreatedAt(rs.getTimestamp("created_at"));
+                att.setStatus(rs.getString("status"));
+                list.add(att);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return list;
+    }
 
+    public int countAttendanceByUserId(Integer selectedUserId) {
+        String sql = "SELECT COUNT(*) FROM attendance WHERE user_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, selectedUserId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int countWorkingDaysByUserId(Integer selectedUserId) {
+        String sql = """
+            SELECT COUNT(*) 
+            FROM attendance 
+            WHERE user_id = ? 
+            AND checkin_time IS NOT NULL 
+            AND checkout_time IS NOT NULL
+        """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, selectedUserId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int countAbsentDaysByUserId(Integer selectedUserId) {
+        String sql = """
+            SELECT COUNT(*) 
+            FROM attendance 
+            WHERE user_id = ? 
+            AND (checkin_time IS NULL OR checkout_time IS NULL)
+        """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, selectedUserId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int countLateDaysByUserId(Integer selectedUserId) {
+        // Giả định đi muộn nếu checkin_time sau 9:00 AM (cần điều chỉnh theo quy định công ty)
+        String sql = """
+            SELECT COUNT(*) 
+            FROM attendance 
+            WHERE user_id = ? 
+            AND checkin_time IS NOT NULL 
+            AND CAST(checkin_time AS TIME) > '09:00:00'
+        """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, selectedUserId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public Users getUserById(Integer selectedUserId) {
+        String sql = """
+            SELECT user_id, username, full_name, email, phone, role, employment_type, status, created_at, ban_reason
+            FROM users
+            WHERE user_id = ?
+        """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, selectedUserId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Users user = new Users();
+                user.setUserId(rs.getInt("user_id"));
+                user.setUsername(rs.getString("username"));
+                user.setFullName(rs.getString("full_name"));
+                user.setEmail(rs.getString("email"));
+                user.setPhone(rs.getString("phone"));
+                user.setRole(rs.getString("role"));
+                user.setEmploymentType(rs.getString("employment_type"));
+                user.setStatus(rs.getString("status"));
+                user.setCreatedAt(rs.getTimestamp("created_at"));
+                user.setBanReason(rs.getString("ban_reason"));
+                return user;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Attendance> getAttendanceByDepartment(Object departmentId, int currentPage, int pageSize) {
+        List<Attendance> list = new ArrayList<>();
+        String sql = """
+            SELECT a.*, u.full_name, l.name AS location_name
+            FROM attendance a
+            JOIN users u ON a.user_id = u.user_id
+            JOIN user_locations ul ON ul.user_id = u.user_id
+            LEFT JOIN locations l ON a.location_id = l.location_id
+            WHERE ul.department_id = ?
+            ORDER BY a.date DESC
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+        """;
+        int offset = (currentPage - 1) * pageSize;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, (Integer) departmentId);
+            ps.setInt(2, offset);
+            ps.setInt(3, pageSize);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Attendance att = new Attendance();
+                att.setAttendanceId(rs.getInt("attendance_id"));
+                Users user = new Users();
+                user.setUserId(rs.getInt("user_id"));
+                user.setFullName(rs.getString("full_name"));
+                att.setUser(user);
+                att.setDate(rs.getDate("date"));
+                att.setCheckinTime(rs.getTimestamp("checkin_time"));
+                att.setCheckoutTime(rs.getTimestamp("checkout_time"));
+                Locations loc = new Locations();
+                loc.setName(rs.getString("location_name"));
+                att.setLocation(loc);
+                att.setCheckinImageUrl(rs.getString("checkin_image_url"));
+                att.setCheckoutImageUrl(rs.getString("checkout_image_url"));
+                att.setIsLocked(rs.getBoolean("is_locked"));
+                att.setCreatedAt(rs.getTimestamp("created_at"));
+                att.setStatus(rs.getString("status"));
+                list.add(att);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return list;
+    }
 }

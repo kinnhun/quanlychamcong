@@ -148,7 +148,7 @@ public class Users {
         return "Users{" + "userId=" + userId + ", username=" + username + ", passwordHash=" + passwordHash + ", fullName=" + fullName + ", email=" + email + ", phone=" + phone + ", role=" + role + ", employmentType=" + employmentType + ", status=" + status + ", createdAt=" + createdAt + ", banReason=" + banReason + '}';
     }
 
- 
+
 
     
     

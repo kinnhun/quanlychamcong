@@ -34,37 +34,44 @@ public class ManagerAttendanceListController extends HttpServlet {
         String status = request.getParameter("status");
         String date = request.getParameter("date");
         String pageStr = request.getParameter("page");
+        String forEachEmployee = request.getParameter("for"); // Thêm tham số for
 
-        int page = 1, pageSize = 10;
-        if (pageStr != null) try { page = Integer.parseInt(pageStr); } catch (Exception ignored) {}
+        // Kiểm tra nếu for=each-employee
+        if ("each-employee".equals(forEachEmployee)) {
+            response.sendRedirect(request.getContextPath() + "/manager/attendance-each-employee");
+            return;
+        } else {
+            int page = 1, pageSize = 10;
+            if (pageStr != null) try { page = Integer.parseInt(pageStr); } catch (Exception ignored) {}
 
-        Integer userId = null;
-        if (userIdStr != null && !userIdStr.isEmpty()) {
-            try { userId = Integer.parseInt(userIdStr); } catch (Exception ignored) {}
+            Integer userId = null;
+            if (userIdStr != null && !userIdStr.isEmpty()) {
+                try { userId = Integer.parseInt(userIdStr); } catch (Exception ignored) {}
+            }
+
+            AttendanceDAO dao = new AttendanceDAO();
+
+            // Đếm tổng số bản ghi lọc được
+            int totalRecords = dao.countAttendanceByManagerFilter(manager.getUserId(), userId, status, date);
+            int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+            // Lấy danh sách theo trang
+            List<Attendance> attendanceList = dao.getAttendanceByManagerFilter(
+                    manager.getUserId(), userId, status, date, page, pageSize);
+
+            // Lấy danh sách nhân viên (cho filter dropdown)
+            List<Users> employeeList = dao.getEmployeesByManager(manager.getUserId());
+
+            request.setAttribute("attendanceList", attendanceList);
+            request.setAttribute("employeeList", employeeList);
+
+            request.setAttribute("page", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("selectedUserId", userId != null ? userId : "");
+            request.setAttribute("selectedStatus", status != null ? status : "");
+            request.setAttribute("selectedDate", date != null ? date : "");
+
+            request.getRequestDispatcher("/view/manager/attendance_list.jsp").forward(request, response);
         }
-
-        AttendanceDAO dao = new AttendanceDAO();
-
-        // Đếm tổng số bản ghi lọc được
-        int totalRecords = dao.countAttendanceByManagerFilter(manager.getUserId(), userId, status, date);
-        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
-
-        // Lấy danh sách theo trang
-        List<Attendance> attendanceList = dao.getAttendanceByManagerFilter(
-                manager.getUserId(), userId, status, date, page, pageSize);
-
-        // Lấy danh sách nhân viên (cho filter dropdown)
-        List<Users> employeeList = dao.getEmployeesByManager(manager.getUserId());
-
-        request.setAttribute("attendanceList", attendanceList);
-        request.setAttribute("employeeList", employeeList);
-
-        request.setAttribute("page", page);
-        request.setAttribute("totalPages", totalPages);
-        request.setAttribute("selectedUserId", userId != null ? userId : "");
-        request.setAttribute("selectedStatus", status != null ? status : "");
-        request.setAttribute("selectedDate", date != null ? date : "");
-
-        request.getRequestDispatcher("/view/manager/attendance_list.jsp").forward(request, response);
     }
 }

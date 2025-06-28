@@ -411,6 +411,20 @@ public class UserDAO extends DBContext {
         return list;
     }
 
+  public boolean checkPassword(int userId, String oldPass) {
+    String sql = "SELECT password_hash FROM users WHERE user_id = ?";
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, userId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            String storedPassword = rs.getString("password_hash");
+            return storedPassword != null && storedPassword.equals(oldPass);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
    
     
   

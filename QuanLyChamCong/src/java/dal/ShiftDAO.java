@@ -609,4 +609,131 @@ public class ShiftDAO extends DBContext {
         }
         return false;
     }
+
+  public List<UserShift> getUserShiftsByEmployee(int userId, String week, String month) {
+    List<UserShift> list = new ArrayList<>();
+    StringBuilder sql = new StringBuilder(
+            "SELECT us.*, u.full_name, u.username, s.shift_name, s.start_time, s.end_time, "
+            + "l.name AS location_name, d.department_name, assign.full_name AS assigned_by, us.assigned_at "
+            + "FROM user_shifts us "
+            + "JOIN users u ON us.user_id = u.user_id "
+            + "JOIN shifts s ON us.shift_id = s.shift_id "
+            + "LEFT JOIN locations l ON us.location_id = l.location_id "
+            + "LEFT JOIN departments d ON us.department_id = d.department_id "
+            + "LEFT JOIN users assign ON us.assigned_by = assign.user_id "
+            + "WHERE us.user_id = ? "
+    );
+    List<Object> params = new ArrayList<>();
+    params.add(userId);
+
+    sql.append("ORDER BY us.date DESC, s.start_time");
+
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+        for (int i = 0; i < params.size(); i++) {
+            ps.setObject(i + 1, params.get(i));
+        }
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            UserShift us = new UserShift();
+
+            us.setId(rs.getInt("id"));
+            us.setDate(rs.getDate("date"));
+            us.setNote(rs.getString("note"));
+            us.setAssignedAt(rs.getTimestamp("assigned_at"));
+
+            // User
+            Users user = new Users();
+            user.setUserId(rs.getInt("user_id"));
+            user.setFullName(rs.getString("full_name"));
+            user.setUsername(rs.getString("username"));
+            us.setUser(user);
+
+            // Shift
+            Shift shift = new Shift();
+            shift.setShiftId(rs.getInt("shift_id"));
+            shift.setShiftName(rs.getString("shift_name"));
+            shift.setStartTime(rs.getTime("start_time"));
+            shift.setEndTime(rs.getTime("end_time"));
+            us.setShift(shift);
+
+            // Location
+            Locations loc = null;
+            int locId = rs.getInt("location_id");
+            if (!rs.wasNull()) {
+                loc = new Locations();
+                loc.setId(locId);
+                loc.setName(rs.getString("location_name"));
+            }
+            us.setLocation(loc);
+
+            // Department
+            Departments dept = null;
+            int deptId = rs.getInt("department_id");
+            if (!rs.wasNull()) {
+                dept = new Departments();
+                dept.setDepartmentId(deptId);
+                dept.setDepartmentName(rs.getString("department_name"));
+            }
+            us.setDepartment(dept);
+
+            // Người phân ca
+            Users assignedBy = null;
+            String assignedByName = rs.getString("assigned_by"); // Cột full_name từ bảng assign
+            int assignedById = rs.getInt("assigned_by");
+            if (assignedByName != null) {
+                assignedBy = new Users();
+                assignedBy.setUserId(assignedById);
+                assignedBy.setFullName(assignedByName);
+            }
+            us.setAssignedBy(assignedBy);
+
+            list.add(us);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+    
+    
+    
+    public static void main(String[] args) {
+    // Giả sử bạn có một instance của class chứa phương thức getUserShiftsByEmployee
+    ShiftDAO yourClass = new ShiftDAO(); // Thay YourClass bằng tên class của bạn
+
+    // Test với userId, week và month
+    int userId = 1;
+    String week = "2025-W25"; // Tuần 1 năm 2025
+    String month = "2025-06"; // Tháng 1 năm 2025
+
+    // Gọi phương thức
+    List<UserShift> userShifts = yourClass.getUserShiftsByEmployee(userId, week, month);
+
+    // In kết quả
+    if (userShifts.isEmpty()) {
+        System.out.println("Không tìm thấy ca làm việc nào.");
+    } else {
+        for (UserShift us : userShifts) {
+            System.out.println("ID: " + us.getId());
+            System.out.println("Date: " + us.getDate());
+            System.out.println("User: " + us.getUser().getFullName());
+            System.out.println("Shift: " + us.getShift().getShiftName() + " (" +
+                    us.getShift().getStartTime() + " - " + us.getShift().getEndTime() + ")");
+            if (us.getLocation() != null) {
+                System.out.println("Location: " + us.getLocation().getName());
+            }
+            if (us.getDepartment() != null) {
+                System.out.println("Department: " + us.getDepartment().getDepartmentName());
+            }
+            if (us.getAssignedBy() != null) {
+                System.out.println("Assigned By: " + us.getAssignedBy().getFullName());
+            }
+            System.out.println("Note: " + us.getNote());
+            System.out.println("Assigned At: " + us.getAssignedAt());
+            System.out.println("------------------------");
+        }
+    }
+}
+    
+    
 }

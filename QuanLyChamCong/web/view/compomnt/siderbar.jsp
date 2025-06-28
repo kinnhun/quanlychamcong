@@ -172,6 +172,12 @@
                                 <span class="hide-menu">Danh sách chấm công</span>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/employee/shift-schedule">
+                                <i data-feather="clock" class="feather-icon"></i>
+                                <span class="hide-menu">Lịch ca làm</span>
+                            </a>
+                        </li>
 
                         <li class="sidebar-item">
                             <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/logout">

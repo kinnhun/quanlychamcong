@@ -329,191 +329,284 @@ public class ShiftDAO extends DBContext {
         return false;
     }
 
- public List<UserShift> getUserShiftsPaging(int managerId, String empId, String shiftId, String departmentId, String locationId, String date, String week, String month, int page, int pageSize) {
-    List<UserShift> list = new ArrayList<>();
-    StringBuilder sql = new StringBuilder(
-        "SELECT us.*, u.full_name, u.username, s.shift_name, s.start_time, s.end_time, " +
-        "l.name AS location_name, d.department_name, assign.full_name AS assigned_by, us.assigned_at " +
-        "FROM user_shifts us " +
-        "JOIN users u ON us.user_id = u.user_id " +
-        "JOIN shifts s ON us.shift_id = s.shift_id " +
-        "LEFT JOIN locations l ON us.location_id = l.location_id " +
-        "LEFT JOIN departments d ON us.department_id = d.department_id " +
-        "LEFT JOIN users assign ON us.assigned_by = assign.user_id " +
-        "WHERE 1=1 "
-    );
-    List<Object> params = new ArrayList<>();
+    public List<UserShift> getUserShiftsPaging(int managerId, String empId, String shiftId, String departmentId, String locationId, String date, String week, String month, int page, int pageSize) {
+        List<UserShift> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT us.*, u.full_name, u.username, s.shift_name, s.start_time, s.end_time, "
+                + "l.name AS location_name, d.department_name, assign.full_name AS assigned_by, us.assigned_at "
+                + "FROM user_shifts us "
+                + "JOIN users u ON us.user_id = u.user_id "
+                + "JOIN shifts s ON us.shift_id = s.shift_id "
+                + "LEFT JOIN locations l ON us.location_id = l.location_id "
+                + "LEFT JOIN departments d ON us.department_id = d.department_id "
+                + "LEFT JOIN users assign ON us.assigned_by = assign.user_id "
+                + "WHERE 1=1 "
+        );
+        List<Object> params = new ArrayList<>();
 
-    // Chỉ lấy nhân viên manager này quản lý (theo location)
-    sql.append("AND EXISTS (SELECT 1 FROM user_locations ul WHERE ul.user_id = us.user_id AND EXISTS (SELECT 1 FROM user_locations mul WHERE mul.user_id = ? AND mul.location_id = ul.location_id)) ");
-    params.add(managerId);
+        // Chỉ lấy nhân viên manager này quản lý (theo location)
+        sql.append("AND EXISTS (SELECT 1 FROM user_locations ul WHERE ul.user_id = us.user_id AND EXISTS (SELECT 1 FROM user_locations mul WHERE mul.user_id = ? AND mul.location_id = ul.location_id)) ");
+        params.add(managerId);
 
-    if (empId != null && !empId.isEmpty()) {
-        sql.append("AND u.user_id = ? ");
-        params.add(Integer.parseInt(empId));
-    }
-    if (shiftId != null && !shiftId.isEmpty()) {
-        sql.append("AND s.shift_id = ? ");
-        params.add(Integer.parseInt(shiftId));
-    }
-    if (departmentId != null && !departmentId.isEmpty()) {
-        sql.append("AND d.department_id = ? ");
-        params.add(Integer.parseInt(departmentId));
-    }
-    if (locationId != null && !locationId.isEmpty()) {
-        sql.append("AND l.location_id = ? ");
-        params.add(Integer.parseInt(locationId));
-    }
-    if (date != null && !date.isEmpty()) {
-        sql.append("AND us.date = ? ");
-        params.add(Date.valueOf(date));
-    }
-    if (week != null && !week.isEmpty()) {
-        sql.append("AND DATEPART(ISO_WEEK, us.date) = ? AND YEAR(us.date) = ? ");
-        String[] arr = week.split("-");
-        if (arr.length == 2) {
-            params.add(Integer.parseInt(arr[1]));
-            params.add(Integer.parseInt(arr[0]));
+        if (empId != null && !empId.isEmpty()) {
+            sql.append("AND u.user_id = ? ");
+            params.add(Integer.parseInt(empId));
         }
-    }
-    if (month != null && !month.isEmpty()) {
-        sql.append("AND FORMAT(us.date, 'yyyy-MM') = ? ");
-        params.add(month);
-    }
-
-    sql.append("ORDER BY us.date DESC, u.full_name ");
-    sql.append("OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-    params.add((page - 1) * pageSize);
-    params.add(pageSize);
-
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-        for (int i = 0; i < params.size(); i++) {
-            ps.setObject(i + 1, params.get(i));
+        if (shiftId != null && !shiftId.isEmpty()) {
+            sql.append("AND s.shift_id = ? ");
+            params.add(Integer.parseInt(shiftId));
         }
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            UserShift us = new UserShift();
-
-            us.setId(rs.getInt("id"));
-            us.setDate(rs.getDate("date"));
-            us.setNote(rs.getString("note"));
-            us.setAssignedAt(rs.getTimestamp("assigned_at"));
-
-            // User
-            Users user = new Users();
-            user.setUserId(rs.getInt("user_id"));
-            user.setFullName(rs.getString("full_name"));
-            user.setUsername(rs.getString("username"));
-            us.setUser(user);
-
-            // Shift
-            Shift shift = new Shift();
-            shift.setShiftId(rs.getInt("shift_id"));
-            shift.setShiftName(rs.getString("shift_name"));
-            shift.setStartTime(rs.getTime("start_time"));
-            shift.setEndTime(rs.getTime("end_time"));
-            us.setShift(shift);
-
-            // Location
-            Locations loc = null;
-            int locId = rs.getInt("location_id");
-            if (!rs.wasNull()) {
-                loc = new Locations();
-                loc.setId(locId);
-                loc.setName(rs.getString("location_name"));
+        if (departmentId != null && !departmentId.isEmpty()) {
+            sql.append("AND d.department_id = ? ");
+            params.add(Integer.parseInt(departmentId));
+        }
+        if (locationId != null && !locationId.isEmpty()) {
+            sql.append("AND l.location_id = ? ");
+            params.add(Integer.parseInt(locationId));
+        }
+        if (date != null && !date.isEmpty()) {
+            sql.append("AND us.date = ? ");
+            params.add(Date.valueOf(date));
+        }
+        if (week != null && !week.isEmpty()) {
+            sql.append("AND DATEPART(ISO_WEEK, us.date) = ? AND YEAR(us.date) = ? ");
+            String[] arr = week.split("-");
+            if (arr.length == 2) {
+                params.add(Integer.parseInt(arr[1]));
+                params.add(Integer.parseInt(arr[0]));
             }
-            us.setLocation(loc);
+        }
+        if (month != null && !month.isEmpty()) {
+            sql.append("AND FORMAT(us.date, 'yyyy-MM') = ? ");
+            params.add(month);
+        }
 
-            // Department
-            Departments dept = null;
-            int deptId = rs.getInt("department_id");
-            if (!rs.wasNull()) {
-                dept = new Departments();
-                dept.setDepartmentId(deptId);
-                dept.setDepartmentName(rs.getString("department_name"));
+        sql.append("ORDER BY us.date DESC, u.full_name ");
+        sql.append("OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+        params.add((page - 1) * pageSize);
+        params.add(pageSize);
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
             }
-            us.setDepartment(dept);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                UserShift us = new UserShift();
 
-            // Người phân ca
-            Users assignedBy = null;
-            String assignedByName = rs.getString("assigned_by");
-            int assignedById = rs.getInt("assigned_by");
-            if (assignedByName != null) {
-                assignedBy = new Users();
-                assignedBy.setUserId(assignedById);
-                assignedBy.setFullName(assignedByName);
+                us.setId(rs.getInt("id"));
+                us.setDate(rs.getDate("date"));
+                us.setNote(rs.getString("note"));
+                us.setAssignedAt(rs.getTimestamp("assigned_at"));
+
+                // User
+                Users user = new Users();
+                user.setUserId(rs.getInt("user_id"));
+                user.setFullName(rs.getString("full_name"));
+                user.setUsername(rs.getString("username"));
+                us.setUser(user);
+
+                // Shift
+                Shift shift = new Shift();
+                shift.setShiftId(rs.getInt("shift_id"));
+                shift.setShiftName(rs.getString("shift_name"));
+                shift.setStartTime(rs.getTime("start_time"));
+                shift.setEndTime(rs.getTime("end_time"));
+                us.setShift(shift);
+
+                // Location
+                Locations loc = null;
+                int locId = rs.getInt("location_id");
+                if (!rs.wasNull()) {
+                    loc = new Locations();
+                    loc.setId(locId);
+                    loc.setName(rs.getString("location_name"));
+                }
+                us.setLocation(loc);
+
+                // Department
+                Departments dept = null;
+                int deptId = rs.getInt("department_id");
+                if (!rs.wasNull()) {
+                    dept = new Departments();
+                    dept.setDepartmentId(deptId);
+                    dept.setDepartmentName(rs.getString("department_name"));
+                }
+                us.setDepartment(dept);
+
+                // Người phân ca
+                Users assignedBy = null;
+                String assignedByName = rs.getString("assigned_by");
+                int assignedById = rs.getInt("assigned_by");
+                if (assignedByName != null) {
+                    assignedBy = new Users();
+                    assignedBy.setUserId(assignedById);
+                    assignedBy.setFullName(assignedByName);
+                }
+                us.setAssignedBy(assignedBy);
+
+                list.add(us);
             }
-            us.setAssignedBy(assignedBy);
-
-            list.add(us);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return list;
     }
-    return list;
-}
 
-  public int countUserShifts(int managerId, String empId, String shiftId, String departmentId, String locationId, String date, String week, String month) {
-    StringBuilder sql = new StringBuilder(
-        "SELECT COUNT(*) " +
-        "FROM user_shifts us " +
-        "JOIN users u ON us.user_id = u.user_id " +
-        "JOIN shifts s ON us.shift_id = s.shift_id " +
-        "LEFT JOIN locations l ON us.location_id = l.location_id " +
-        "LEFT JOIN departments d ON us.department_id = d.department_id " +
-        "WHERE 1=1 "
-    );
-    List<Object> params = new ArrayList<>();
+    public int countUserShifts(int managerId, String empId, String shiftId, String departmentId, String locationId, String date, String week, String month) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(*) "
+                + "FROM user_shifts us "
+                + "JOIN users u ON us.user_id = u.user_id "
+                + "JOIN shifts s ON us.shift_id = s.shift_id "
+                + "LEFT JOIN locations l ON us.location_id = l.location_id "
+                + "LEFT JOIN departments d ON us.department_id = d.department_id "
+                + "WHERE 1=1 "
+        );
+        List<Object> params = new ArrayList<>();
 
-    sql.append("AND EXISTS (SELECT 1 FROM user_locations ul WHERE ul.user_id = us.user_id AND EXISTS (SELECT 1 FROM user_locations mul WHERE mul.user_id = ? AND mul.location_id = ul.location_id)) ");
-    params.add(managerId);
+        sql.append("AND EXISTS (SELECT 1 FROM user_locations ul WHERE ul.user_id = us.user_id AND EXISTS (SELECT 1 FROM user_locations mul WHERE mul.user_id = ? AND mul.location_id = ul.location_id)) ");
+        params.add(managerId);
 
-    if (empId != null && !empId.isEmpty()) {
-        sql.append("AND u.user_id = ? ");
-        params.add(Integer.parseInt(empId));
-    }
-    if (shiftId != null && !shiftId.isEmpty()) {
-        sql.append("AND s.shift_id = ? ");
-        params.add(Integer.parseInt(shiftId));
-    }
-    if (departmentId != null && !departmentId.isEmpty()) {
-        sql.append("AND d.department_id = ? ");
-        params.add(Integer.parseInt(departmentId));
-    }
-    if (locationId != null && !locationId.isEmpty()) {
-        sql.append("AND l.location_id = ? ");
-        params.add(Integer.parseInt(locationId));
-    }
-    if (date != null && !date.isEmpty()) {
-        sql.append("AND us.date = ? ");
-        params.add(Date.valueOf(date));
-    }
-    if (week != null && !week.isEmpty()) {
-        sql.append("AND DATEPART(ISO_WEEK, us.date) = ? AND YEAR(us.date) = ? ");
-        String[] arr = week.split("-");
-        if (arr.length == 2) {
-            params.add(Integer.parseInt(arr[1]));
-            params.add(Integer.parseInt(arr[0]));
+        if (empId != null && !empId.isEmpty()) {
+            sql.append("AND u.user_id = ? ");
+            params.add(Integer.parseInt(empId));
         }
-    }
-    if (month != null && !month.isEmpty()) {
-        sql.append("AND FORMAT(us.date, 'yyyy-MM') = ? ");
-        params.add(month);
-    }
-
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-        for (int i = 0; i < params.size(); i++) {
-            ps.setObject(i + 1, params.get(i));
+        if (shiftId != null && !shiftId.isEmpty()) {
+            sql.append("AND s.shift_id = ? ");
+            params.add(Integer.parseInt(shiftId));
         }
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getInt(1);
+        if (departmentId != null && !departmentId.isEmpty()) {
+            sql.append("AND d.department_id = ? ");
+            params.add(Integer.parseInt(departmentId));
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        if (locationId != null && !locationId.isEmpty()) {
+            sql.append("AND l.location_id = ? ");
+            params.add(Integer.parseInt(locationId));
+        }
+        if (date != null && !date.isEmpty()) {
+            sql.append("AND us.date = ? ");
+            params.add(Date.valueOf(date));
+        }
+        if (week != null && !week.isEmpty()) {
+            sql.append("AND DATEPART(ISO_WEEK, us.date) = ? AND YEAR(us.date) = ? ");
+            String[] arr = week.split("-");
+            if (arr.length == 2) {
+                params.add(Integer.parseInt(arr[1]));
+                params.add(Integer.parseInt(arr[0]));
+            }
+        }
+        if (month != null && !month.isEmpty()) {
+            sql.append("AND FORMAT(us.date, 'yyyy-MM') = ? ");
+            params.add(month);
+        }
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
-    return 0;
-}
 
+    public UserShift getUserShiftById(int userShiftId) {
+        String sql = """
+        SELECT * FROM user_shifts WHERE id = ?
+    """;
 
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userShiftId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                UserShift us = new UserShift();
+
+                // Thiết lập các thuộc tính cơ bản của UserShift
+                us.setId(rs.getInt("id"));
+                us.setDate(rs.getDate("date"));
+                us.setNote(rs.getString("note"));
+                us.setAssignedAt(rs.getTimestamp("assigned_at"));
+
+                // User
+                UserDAO udao = new UserDAO();
+                Users user = udao.getUserById(rs.getInt("user_id"));
+                us.setUser(user);
+
+                // Shift
+                ShiftDAO sdao = new ShiftDAO();
+                Shift shift = sdao.getById(rs.getInt("shift_id"));
+                us.setShift(shift);
+
+                // Location
+                LocationDAO ldao = new LocationDAO();
+                Locations location = ldao.getLocationById(rs.getInt("location_id"));
+                us.setLocation(location);
+
+                // Department
+                Departments dept = ldao.getDepartmentById(rs.getInt("department_id"));
+                us.setDepartment(dept);
+
+                // Assigned By
+                Users assignedBy = udao.getUserById(rs.getInt("assigned_by"));
+                us.setAssignedBy(assignedBy);
+
+                return us;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean updateUserShift(int userShiftId, int userId, int shiftId, Date date, Integer locationId, Integer departmentId, int assignedBy, String note) {
+        String sql = """
+        UPDATE user_shifts 
+        SET user_id = ?, shift_id = ?, date = ?, location_id = ?, department_id = ?, assigned_by = ?, note = ?, assigned_at = GETDATE()
+        WHERE id = ?
+    """;
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            // Gán các tham số cho câu lệnh SQL
+            ps.setInt(1, userId);
+            ps.setInt(2, shiftId);
+            ps.setDate(3, date);
+
+            // Xử lý location_id (có thể null)
+            if (locationId != null) {
+                ps.setInt(4, locationId);
+            } else {
+                ps.setNull(4, Types.INTEGER);
+            }
+
+            // Xử lý department_id (có thể null)
+            if (departmentId != null) {
+                ps.setInt(5, departmentId);
+            } else {
+                ps.setNull(5, Types.INTEGER);
+            }
+
+            ps.setInt(6, assignedBy);
+
+            // Xử lý note (có thể null)
+            if (note != null && !note.isEmpty()) {
+                ps.setString(7, note);
+            } else {
+                ps.setNull(7, Types.NVARCHAR);
+            }
+
+            ps.setInt(8, userShiftId);
+
+            // Thực thi cập nhật và trả về kết quả
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

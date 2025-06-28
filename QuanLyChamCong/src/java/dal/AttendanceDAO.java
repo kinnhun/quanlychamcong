@@ -741,4 +741,33 @@ public class AttendanceDAO extends DBContext {
         }
         return list;
     }
+
+    public int getIdAttendanceByDisputes(int disputeId) {
+    String sql = "  SELECT [attendance_id] FROM [attendance_disputes] WHERE [dispute_id] = ?";
+    try (Connection conn = getConnection(); 
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, disputeId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("attendance_id");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return -1; // Trả về -1 nếu không tìm thấy
+}
+
+public boolean updateStatusAttendance(int attendanceId, String status) {
+    String sql = "UPDATE attendance SET status = ?, updated_at = GETDATE() WHERE attendance_id = ?";
+    try (Connection conn = getConnection(); 
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, status);
+        ps.setInt(2, attendanceId);
+        int rowsAffected = ps.executeUpdate();
+        return rowsAffected > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    }
+}
 }

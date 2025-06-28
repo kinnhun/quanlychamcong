@@ -1,5 +1,6 @@
-package controller.manager;
+package conntroller.manager;
 
+import dal.AttendanceDAO;
 import dal.AttendanceDisputeDAO;
 import model.AttendanceDispute;
 import model.Users;
@@ -37,7 +38,7 @@ public class ManagerDisputeListController extends HttpServlet {
         String search = request.getParameter("search") != null ? request.getParameter("search").trim() : "";
         String status = request.getParameter("status") != null ? request.getParameter("status").trim() : "";
         String createdDate = request.getParameter("createdDate") != null ? request.getParameter("createdDate").trim() : "";
-        
+
         // Xử lý ngày tạo
         Date parsedDate = null;
         if (!createdDate.isEmpty()) {
@@ -53,7 +54,9 @@ public class ManagerDisputeListController extends HttpServlet {
         int page = 1;
         try {
             page = Integer.parseInt(request.getParameter("page"));
-            if (page < 1) page = 1;
+            if (page < 1) {
+                page = 1;
+            }
         } catch (NumberFormatException e) {
             page = 1;
         }
@@ -79,5 +82,55 @@ public class ManagerDisputeListController extends HttpServlet {
         request.setAttribute("createdDate", createdDate);
 
         request.getRequestDispatcher("/view/manager/dispute_list.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        Users manager = (Users) session.getAttribute("user");
+        AttendanceDisputeDAO dao = new AttendanceDisputeDAO();
+
+        // Lấy dữ liệu từ form
+        String disputeIdStr = request.getParameter("disputeId");
+        String status = request.getParameter("status");
+        String managerComment = request.getParameter("managerComment");
+
+        try {
+            int disputeId = Integer.parseInt(disputeIdStr);
+
+            // Tạo đối tượng AttendanceDispute để cập nhật
+            AttendanceDispute dispute = new AttendanceDispute();
+            dispute.setDisputeId(disputeId);
+            dispute.setStatus(status);
+            dispute.setManagerComment(managerComment);
+            dispute.setLastUpdatedBy(manager.getUserId());
+
+            // Cập nhật khiếu nại trong cơ sở dữ liệu
+            boolean updated = dao.updateDispute(dispute);
+
+            if (updated) {
+
+                if (status.endsWith("approved")) {
+                    AttendanceDAO adao = new AttendanceDAO();
+                    int id = adao.getIdAttendanceByDisputes(disputeId);
+                    boolean checkUpdateStatusAttendance = adao.updateStatusAttendance(id, "present");
+
+                }
+                session.setAttribute("message", "Cập nhật khiếu nại thành công!");
+            } else {
+                session.setAttribute("error", "Cập nhật khiếu nại thất bại!");
+            }
+        } catch (NumberFormatException e) {
+            session.setAttribute("notification", "ID khiếu nại không hợp lệ!");
+        }
+
+        // Chuyển hướng về trang danh sách khiếu nại
+        response.sendRedirect(request.getContextPath() + "/manager/dispute-list");
     }
 }

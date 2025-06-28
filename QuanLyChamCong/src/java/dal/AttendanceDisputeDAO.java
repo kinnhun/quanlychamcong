@@ -261,4 +261,27 @@ public class AttendanceDisputeDAO extends DBContext {
         }
         return 0;
     }
+
+    public boolean updateDispute(AttendanceDispute dispute) {
+        String sql = "UPDATE [dbo].[attendance_disputes] " +
+                     "SET status = ?, manager_comment = ?, resolved_at = GETDATE(), " +
+                     "updated_at = GETDATE(), last_updated_by = ? " +
+                     "WHERE dispute_id = ?";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, dispute.getStatus());
+            stmt.setString(2, dispute.getManagerComment());
+            stmt.setInt(3, dispute.getLastUpdatedBy());
+            stmt.setInt(4, dispute.getDisputeId());
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

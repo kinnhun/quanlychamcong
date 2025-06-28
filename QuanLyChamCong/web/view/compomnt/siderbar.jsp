@@ -125,7 +125,12 @@
                                 <span class="hide-menu">Quản lý phân ca</span>
                             </a>
                         </li>
-
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="${pageContext.request.contextPath}/manager/dispute-list">
+                                <i data-feather="alert-circle" class="feather-icon"></i>
+                                <span class="hide-menu">Danh khiếu nại</span>
+                            </a>
+                        </li>
 
 
 

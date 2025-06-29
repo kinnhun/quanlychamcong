@@ -734,6 +734,90 @@ public class ShiftDAO extends DBContext {
         }
     }
 }
+
+  public int getTotalEmployees() {
+    String sql = "SELECT COUNT(*) FROM users WHERE role = 'employee'";
+    try (Connection conn = getConnection(); 
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return 0;
+}
     
+public Map<String, Integer> getShiftsPerMonth(String year) {
+    Map<String, Integer> accountsPerMonth = new HashMap<>();
+    String sql = "SELECT FORMAT(created_at, 'yyyy-MM') AS month, COUNT(*) AS account_count "
+              + "FROM users "
+              + "WHERE YEAR(created_at) = ? "
+              + "AND role = 'employee' "
+              + "AND status = 'active' "
+              + "GROUP BY FORMAT(created_at, 'yyyy-MM')";
+    try (Connection conn = getConnection(); 
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, year);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            accountsPerMonth.put(rs.getString("month"), rs.getInt("account_count"));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    // Đảm bảo có dữ liệu cho 12 tháng, nếu không có thì trả về 0
+    for (int i = 1; i <= 12; i++) {
+        String month = String.format("%s-%02d", year, i);
+        accountsPerMonth.putIfAbsent(month, 0);
+    }
+    return accountsPerMonth;
+}    
+    
+    public int getTodayWorkingEmployees() {
+    String sql = "SELECT COUNT(DISTINCT user_id) AS employee_count "
+              + "FROM user_shifts "
+              + "WHERE CAST(date AS DATE) = CAST(GETDATE() AS DATE)";
+    try (Connection conn = getConnection(); 
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("employee_count");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return 0;
+}
+
+public int[] getEmployeesPerDayInWeek(String week) {
+    int[] employeesPerDay = new int[6]; // Thứ 2 đến Thứ 7
+    String sql = "SELECT DATEPART(WEEKDAY, date) AS day_of_week, COUNT(DISTINCT user_id) AS employee_count "
+              + "FROM user_shifts "
+              + "WHERE DATEPART(ISO_WEEK, date) = ? AND YEAR(date) = ? "
+              + "GROUP BY DATEPART(WEEKDAY, date)";
+    try (Connection conn = getConnection(); 
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        String[] arr = week.split("-W");
+        if (arr.length == 2) {
+            ps.setInt(1, Integer.parseInt(arr[1]));
+            ps.setString(2, arr[0]);
+        } else {
+            return employeesPerDay; // Trả về mảng 0 nếu định dạng tuần không hợp lệ
+        }
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            int dayOfWeek = rs.getInt("day_of_week"); // 1=CN, 2=Th2, ..., 7=Th7
+            int count = rs.getInt("employee_count");
+            if (dayOfWeek >= 2 && dayOfWeek <= 7) { // Thứ 2 đến Thứ 7
+                employeesPerDay[dayOfWeek - 2] = count;
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return employeesPerDay;
+}
     
 }

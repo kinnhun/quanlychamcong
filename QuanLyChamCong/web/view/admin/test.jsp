@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Quản lý - Thống kê</title>
+    <title>Thống kê</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome cho biểu tượng -->
@@ -46,7 +46,23 @@
             <!-- Thông báo -->
             <c:import url="/view/compomnt/notification.jsp" />
 
-          
+            <!-- Dòng đầu tiên: Thanh điều hướng -->
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <nav class="navbar navbar-light bg-light p-2 rounded">
+                        <div class="d-flex">
+                            <a class="btn nav-btn-primary me-2" href="#"><i class="fas fa-users"></i> Xn nhân sự</a>
+                            <a class="btn nav-btn-danger me-2" href="#"><i class="fas fa-calendar-check"></i> Thêm ca</a>
+                            <a class="btn nav-btn-success me-2" href="#"><i class="fas fa-clock"></i> Quản chấm công</a>
+                            <a class="btn nav-btn-warning me-2" href="#"><i class="fas fa-clipboard-check"></i> Đánh giá</a>
+                            <a class="btn nav-btn-info me-2" href="#"><i class="fas fa-tachometer-alt"></i> Báo cáo</a>
+                            <a class="btn nav-btn-secondary me-2" href="#"><i class="fas fa-bell"></i> <span class="notification-badge">5</span> Thông báo</a>
+                            <a class="btn nav-btn-dark me-2" href="#"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+
             <!-- Dòng thứ hai: Nội dung chính -->
             <div class="row">
                 <!-- Cột trái: Lịch chấm công và thông tin -->
@@ -75,7 +91,7 @@
                     </div>
                     <!-- Lịch chấm công - Kỳ Công -->
                     <div class="card">
-                        <div class="card-header bg-success-custom">Duyệt lịch chấm công - Kỳ Công: 12</div>
+                        <div class="card-header bg-success-custom">Lịch chấm công - Kỳ Công: 12</div>
                         <div class="card-body">
                             <table class="table table-bordered">
                                 <tr>
@@ -133,7 +149,6 @@
                                     <td class="calendar-day"></td>
                                 </tr>
                             </table>
-                            <button class="btn btn-primary mt-2">Duyệt tất cả</button>
                         </div>
                     </div>
                 </div>
@@ -142,10 +157,10 @@
                 <div class="col-md-4">
                     <!-- Biểu đồ cột -->
                     <div class="card mb-4">
-                        <div class="card-header">Tình trạng nhân viên</div>
+                        <div class="card-header">Tình trạng</div>
                         <div class="card-body text-center">
                             <h3>50</h3>
-                            <p>Tổng nhân viên</p>
+                            <p>Tình trạng</p>
                             <canvas id="barChart" width="200" height="100"></canvas>
                         </div>
                     </div>
@@ -154,7 +169,7 @@
                         <div class="card-header">Hôm nay</div>
                         <div class="card-body text-center">
                             <h3>42</h3>
-                            <p>Nhân viên làm việc</p>
+                            <p>Hôm nay</p>
                             <canvas id="lineChart" width="200" height="100"></canvas>
                         </div>
                     </div>
@@ -174,12 +189,12 @@
                     </div>
                     <!-- Thông tin nhân viên -->
                     <div class="card">
-                        <div class="card-header bg-primary-custom">Thông tin admin</div>
+                        <div class="card-header bg-primary-custom">Thông tin nhân viên</div>
                         <div class="card-body text-center">
-                            <img src="https://via.placeholder.com/100" class="rounded-circle mb-2" alt="Admin">
-                            <h5>Admin Hệ Thống</h5>
-                            <p>Quản lý toàn diện</p>
-                            <button class="btn btn-outline-primary btn-sm">Cập nhật thông tin</button>
+                            <img src="https://via.placeholder.com/100" class="rounded-circle mb-2" alt="Hồng Văn Hợi">
+                            <h5>Hồng Văn Hợi</h5>
+                            <p>Quản Lý Chi Nhánh</p>
+                            <button class="btn btn-outline-primary btn-sm">Gọi Lại Cho</button>
                         </div>
                     </div>
                 </div>
@@ -189,24 +204,24 @@
             <div class="row mt-4">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">Báo cáo & Tài liệu</div>
+                        <div class="card-header">Tin tức</div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <div class="card h-100">
-                                        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Báo cáo 1">
+                                        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Tin tức 1">
                                         <div class="card-body">
-                                            <h6 class="card-title">BÁO CÁO 1</h6>
-                                            <p class="card-text">Báo cáo nhân sự tháng 06...</p>
+                                            <h6 class="card-title">TIN TỨC 1</h6>
+                                            <p class="card-text">Welcome to our website. Lorem ipsum dolor sit amet...</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <div class="card h-100">
-                                        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Báo cáo 2">
+                                        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Tin tức 2">
                                         <div class="card-body">
-                                            <h6 class="card-title">BÁO CÁO 2</h6>
-                                            <p class="card-text">Tài liệu quản lý ca làm...</p>
+                                            <h6 class="card-title">TIN TỨC 2</h6>
+                                            <p class="card-text">Than khi chuyen doi sang Lorem ipsum...</p>
                                         </div>
                                     </div>
                                 </div>

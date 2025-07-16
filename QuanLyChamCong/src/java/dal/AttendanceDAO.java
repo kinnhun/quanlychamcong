@@ -770,4 +770,91 @@ public boolean updateStatusAttendance(int attendanceId, String status) {
         return false;
     }
 }
+
+public List<Attendance> filterByDate(String fromDate, String toDate, String employeeId, String status) {
+    List<Attendance> list = new ArrayList<>();
+    StringBuilder sql = new StringBuilder("""
+        SELECT a.*, u.full_name 
+        FROM attendance a 
+        JOIN users u ON a.user_id = u.user_id 
+        WHERE 1=1
+    """);
+
+    List<Object> params = new ArrayList<>();
+
+    
+    if (fromDate != null && !fromDate.isEmpty()) {
+        sql.append(" AND a.date >= ? ");
+        params.add(Date.valueOf(fromDate));
+    }
+
+   
+    if (toDate != null && !toDate.isEmpty()) {
+        sql.append(" AND a.date <= ? ");
+        params.add(Date.valueOf(toDate));
+    }
+
+    
+    if (employeeId != null && !employeeId.isEmpty()) {
+        sql.append(" AND a.user_id = ? ");
+        params.add(Integer.valueOf(employeeId));
+    }
+
+    
+    if (status != null && !status.isEmpty()) {
+        if (status.equals("present")) {
+            sql.append(" AND a.checkin_time IS NOT NULL ");
+        } else if (status.equals("absent")) {
+            sql.append(" AND a.checkin_time IS NULL ");
+        }
+    }
+
+    
+    sql.append(" ORDER BY a.date DESC, u.full_name ASC");
+
+    try (Connection conn = getConnection(); 
+         PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+        
+        for (int i = 0; i < params.size(); i++) {
+            ps.setObject(i + 1, params.get(i));
+        }
+
+        
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Attendance att = new Attendance();
+            att.setAttendanceId(rs.getInt("attendance_id"));
+
+            
+            Users user = new Users();
+            user.setUserId(rs.getInt("user_id"));
+            user.setFullName(rs.getString("full_name"));
+            att.setUser(user);
+
+            
+            att.setDate(rs.getDate("date"));
+            att.setCheckinTime(rs.getTimestamp("checkin_time"));
+            att.setCheckoutTime(rs.getTimestamp("checkout_time"));
+            att.setCheckinImageUrl(rs.getString("checkin_image_url"));
+            att.setCheckoutImageUrl(rs.getString("checkout_image_url"));
+            att.setIsLocked(rs.getBoolean("is_locked"));
+            att.setCreatedAt(rs.getTimestamp("created_at"));
+            att.setStatus(rs.getString("status"));
+
+           
+            Locations loc = new Locations();
+            loc.setId(rs.getInt("location_id"));
+            att.setLocation(loc);
+
+            list.add(att);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return list;
+}
+
 }

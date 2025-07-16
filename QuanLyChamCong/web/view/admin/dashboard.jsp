@@ -135,7 +135,7 @@
                             </div>
                             <!-- Lịch chấm công - Kỳ Công -->
                             <div class="card">
-                                <div class="card-header bg-success-custom">Duyệt lịch chấm công - Kỳ Công: 12</div>
+                                <div class="card-header bg-success-custom text-dark">Duyệt lịch chấm công - Kỳ Công: 12</div>
                                 <div class="card-body">
                                     <table class="table table-bordered">
                                         <tr>

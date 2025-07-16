@@ -89,6 +89,13 @@
                             </a>
                         </li>
 
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="${pageContext.request.contextPath}/admin/attendance-report">
+                                <i data-feather="check-circle" class="feather-icon"></i>
+                                <span class="hide-menu"> Báo cáo chấm công</span>
+                            </a>
+                        </li>
+
 
                         <p>Manager</p>
                         <li class="sidebar-item">

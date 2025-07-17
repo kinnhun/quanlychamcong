@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- CSS tùy chỉnh -->
     <link href="${pageContext.request.contextPath}/view/lib/dist/css/style.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -99,6 +101,7 @@
                                     </c:forEach>
                                 </tbody>
                             </table>
+
                             <!-- Nút xuất Excel -->
                             <form method="post" action="${pageContext.request.contextPath}/admin/attendance-report">
                                 <input type="hidden" name="fromDate" value="${param.fromDate}">
@@ -112,9 +115,41 @@
                 </div>
             </div>
 
+            <!-- Biểu đồ trạng thái chấm công -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">Biểu đồ trạng thái chấm công</div>
+                        <div class="card-body">
+                            <canvas id="attendanceChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Chart.js Script -->
+<script>
+    const ctx = document.getElementById('attendanceChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Có mặt', 'Vắng', 'Tăng ca'],
+            datasets: [{
+                label: 'Trạng thái chấm công',
+                data: [${attendanceStatus[0]}, ${attendanceStatus[1]}, ${attendanceStatus[2]}],
+                backgroundColor: ['#28a745', '#ffc107', '#17a2b8'],
+                borderColor: ['#28a745', '#ffc107', '#17a2b8'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
 
 <!-- Import footer -->
 <c:import url="/view/compomnt/footer.jsp" />

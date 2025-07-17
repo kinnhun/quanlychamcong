@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -33,8 +34,21 @@ public class AminAttendanceReportController extends HttpServlet {
         UserDAO userDao = new UserDAO();
         List<Users> usersList = userDao.getAllUsers();
 
+        // Dữ liệu cho biểu đồ
+        int[] attendanceStatus = {0, 0, 0}; // 0 - Có mặt, 1 - Vắng, 2 - Tăng ca
+        for (Attendance att : attendanceList) {
+            if (att.getCheckinTime() != null && att.getCheckoutTime() != null) {
+                attendanceStatus[0]++; // Có mặt
+            } else if (att.getCheckinTime() == null && att.getCheckoutTime() == null) {
+                attendanceStatus[1]++; // Vắng
+            } else {
+                attendanceStatus[2]++; // Tăng ca
+            }
+        }
+
         request.setAttribute("attendanceList", attendanceList);
         request.setAttribute("usersList", usersList);
+        request.setAttribute("attendanceStatus", attendanceStatus);
 
         request.setAttribute("fromDate", fromDate);
         request.setAttribute("toDate", toDate);

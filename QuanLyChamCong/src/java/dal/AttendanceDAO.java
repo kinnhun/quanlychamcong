@@ -857,4 +857,33 @@ public List<Attendance> filterByDate(String fromDate, String toDate, String empl
     return list;
 }
 
+  public int countLeave(int userId, String fromDate, String toDate, boolean isWithPermission) {
+    String sql = """
+        SELECT COUNT(*) FROM attendance
+        WHERE user_id = ?
+          AND date >= ?
+          AND date <= ?
+          AND status = ?
+    """;
+
+    String statusValue = isWithPermission ? "leave_with" : "leave_without";
+
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, userId);
+        ps.setDate(2, Date.valueOf(fromDate));
+        ps.setDate(3, Date.valueOf(toDate));
+        ps.setString(4, statusValue);
+
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return 0;
+}
+
+
 }

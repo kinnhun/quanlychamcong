@@ -610,214 +610,500 @@ public class ShiftDAO extends DBContext {
         return false;
     }
 
-  public List<UserShift> getUserShiftsByEmployee(int userId, String week, String month) {
-    List<UserShift> list = new ArrayList<>();
-    StringBuilder sql = new StringBuilder(
-            "SELECT us.*, u.full_name, u.username, s.shift_name, s.start_time, s.end_time, "
-            + "l.name AS location_name, d.department_name, assign.full_name AS assigned_by, us.assigned_at "
-            + "FROM user_shifts us "
-            + "JOIN users u ON us.user_id = u.user_id "
-            + "JOIN shifts s ON us.shift_id = s.shift_id "
-            + "LEFT JOIN locations l ON us.location_id = l.location_id "
-            + "LEFT JOIN departments d ON us.department_id = d.department_id "
-            + "LEFT JOIN users assign ON us.assigned_by = assign.user_id "
-            + "WHERE us.user_id = ? "
-    );
-    List<Object> params = new ArrayList<>();
-    params.add(userId);
+    public List<UserShift> getUserShiftsByEmployee(int userId, String week, String month) {
+        List<UserShift> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT us.*, u.full_name, u.username, s.shift_name, s.start_time, s.end_time, "
+                + "l.name AS location_name, d.department_name, assign.full_name AS assigned_by, us.assigned_at "
+                + "FROM user_shifts us "
+                + "JOIN users u ON us.user_id = u.user_id "
+                + "JOIN shifts s ON us.shift_id = s.shift_id "
+                + "LEFT JOIN locations l ON us.location_id = l.location_id "
+                + "LEFT JOIN departments d ON us.department_id = d.department_id "
+                + "LEFT JOIN users assign ON us.assigned_by = assign.user_id "
+                + "WHERE us.user_id = ? "
+        );
+        List<Object> params = new ArrayList<>();
+        params.add(userId);
 
-    sql.append("ORDER BY us.date DESC, s.start_time");
+        sql.append("ORDER BY us.date DESC, s.start_time");
 
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-        for (int i = 0; i < params.size(); i++) {
-            ps.setObject(i + 1, params.get(i));
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                UserShift us = new UserShift();
+
+                us.setId(rs.getInt("id"));
+                us.setDate(rs.getDate("date"));
+                us.setNote(rs.getString("note"));
+                us.setAssignedAt(rs.getTimestamp("assigned_at"));
+
+                // User
+                Users user = new Users();
+                user.setUserId(rs.getInt("user_id"));
+                user.setFullName(rs.getString("full_name"));
+                user.setUsername(rs.getString("username"));
+                us.setUser(user);
+
+                // Shift
+                Shift shift = new Shift();
+                shift.setShiftId(rs.getInt("shift_id"));
+                shift.setShiftName(rs.getString("shift_name"));
+                shift.setStartTime(rs.getTime("start_time"));
+                shift.setEndTime(rs.getTime("end_time"));
+                us.setShift(shift);
+
+                // Location
+                Locations loc = null;
+                int locId = rs.getInt("location_id");
+                if (!rs.wasNull()) {
+                    loc = new Locations();
+                    loc.setId(locId);
+                    loc.setName(rs.getString("location_name"));
+                }
+                us.setLocation(loc);
+
+                // Department
+                Departments dept = null;
+                int deptId = rs.getInt("department_id");
+                if (!rs.wasNull()) {
+                    dept = new Departments();
+                    dept.setDepartmentId(deptId);
+                    dept.setDepartmentName(rs.getString("department_name"));
+                }
+                us.setDepartment(dept);
+
+                // Người phân ca
+                Users assignedBy = null;
+                String assignedByName = rs.getString("assigned_by"); // Cột full_name từ bảng assign
+                int assignedById = rs.getInt("assigned_by");
+                if (assignedByName != null) {
+                    assignedBy = new Users();
+                    assignedBy.setUserId(assignedById);
+                    assignedBy.setFullName(assignedByName);
+                }
+                us.setAssignedBy(assignedBy);
+
+                list.add(us);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            UserShift us = new UserShift();
-
-            us.setId(rs.getInt("id"));
-            us.setDate(rs.getDate("date"));
-            us.setNote(rs.getString("note"));
-            us.setAssignedAt(rs.getTimestamp("assigned_at"));
-
-            // User
-            Users user = new Users();
-            user.setUserId(rs.getInt("user_id"));
-            user.setFullName(rs.getString("full_name"));
-            user.setUsername(rs.getString("username"));
-            us.setUser(user);
-
-            // Shift
-            Shift shift = new Shift();
-            shift.setShiftId(rs.getInt("shift_id"));
-            shift.setShiftName(rs.getString("shift_name"));
-            shift.setStartTime(rs.getTime("start_time"));
-            shift.setEndTime(rs.getTime("end_time"));
-            us.setShift(shift);
-
-            // Location
-            Locations loc = null;
-            int locId = rs.getInt("location_id");
-            if (!rs.wasNull()) {
-                loc = new Locations();
-                loc.setId(locId);
-                loc.setName(rs.getString("location_name"));
-            }
-            us.setLocation(loc);
-
-            // Department
-            Departments dept = null;
-            int deptId = rs.getInt("department_id");
-            if (!rs.wasNull()) {
-                dept = new Departments();
-                dept.setDepartmentId(deptId);
-                dept.setDepartmentName(rs.getString("department_name"));
-            }
-            us.setDepartment(dept);
-
-            // Người phân ca
-            Users assignedBy = null;
-            String assignedByName = rs.getString("assigned_by"); // Cột full_name từ bảng assign
-            int assignedById = rs.getInt("assigned_by");
-            if (assignedByName != null) {
-                assignedBy = new Users();
-                assignedBy.setUserId(assignedById);
-                assignedBy.setFullName(assignedByName);
-            }
-            us.setAssignedBy(assignedBy);
-
-            list.add(us);
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return list;
     }
-    return list;
-}
-    
-    
-    
+
     public static void main(String[] args) {
-    // Giả sử bạn có một instance của class chứa phương thức getUserShiftsByEmployee
-    ShiftDAO yourClass = new ShiftDAO(); // Thay YourClass bằng tên class của bạn
+        // Giả sử bạn có một instance của class chứa phương thức getUserShiftsByEmployee
+        ShiftDAO yourClass = new ShiftDAO(); // Thay YourClass bằng tên class của bạn
 
-    // Test với userId, week và month
-    int userId = 1;
-    String week = "2025-W25"; // Tuần 1 năm 2025
-    String month = "2025-06"; // Tháng 1 năm 2025
+        // Test với userId, week và month
+        int userId = 1;
+        String week = "2025-W25"; // Tuần 1 năm 2025
+        String month = "2025-06"; // Tháng 1 năm 2025
 
-    // Gọi phương thức
-    List<UserShift> userShifts = yourClass.getUserShiftsByEmployee(userId, week, month);
+        // Gọi phương thức
+        List<UserShift> userShifts = yourClass.getUserShiftsByEmployee(userId, week, month);
 
-    // In kết quả
-    if (userShifts.isEmpty()) {
-        System.out.println("Không tìm thấy ca làm việc nào.");
-    } else {
-        for (UserShift us : userShifts) {
-            System.out.println("ID: " + us.getId());
-            System.out.println("Date: " + us.getDate());
-            System.out.println("User: " + us.getUser().getFullName());
-            System.out.println("Shift: " + us.getShift().getShiftName() + " (" +
-                    us.getShift().getStartTime() + " - " + us.getShift().getEndTime() + ")");
-            if (us.getLocation() != null) {
-                System.out.println("Location: " + us.getLocation().getName());
-            }
-            if (us.getDepartment() != null) {
-                System.out.println("Department: " + us.getDepartment().getDepartmentName());
-            }
-            if (us.getAssignedBy() != null) {
-                System.out.println("Assigned By: " + us.getAssignedBy().getFullName());
-            }
-            System.out.println("Note: " + us.getNote());
-            System.out.println("Assigned At: " + us.getAssignedAt());
-            System.out.println("------------------------");
-        }
-    }
-}
-
-  public int getTotalEmployees() {
-    String sql = "SELECT COUNT(*) FROM users WHERE role = 'employee'";
-    try (Connection conn = getConnection(); 
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getInt(1);
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return 0;
-}
-    
-public Map<String, Integer> getShiftsPerMonth(String year) {
-    Map<String, Integer> accountsPerMonth = new HashMap<>();
-    String sql = "SELECT FORMAT(created_at, 'yyyy-MM') AS month, COUNT(*) AS account_count "
-              + "FROM users "
-              + "WHERE YEAR(created_at) = ? "
-              + "AND role = 'employee' "
-              + "AND status = 'active' "
-              + "GROUP BY FORMAT(created_at, 'yyyy-MM')";
-    try (Connection conn = getConnection(); 
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, year);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            accountsPerMonth.put(rs.getString("month"), rs.getInt("account_count"));
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    // Đảm bảo có dữ liệu cho 12 tháng, nếu không có thì trả về 0
-    for (int i = 1; i <= 12; i++) {
-        String month = String.format("%s-%02d", year, i);
-        accountsPerMonth.putIfAbsent(month, 0);
-    }
-    return accountsPerMonth;
-}    
-    
-    public int getTodayWorkingEmployees() {
-    String sql = "SELECT COUNT(DISTINCT user_id) AS employee_count "
-              + "FROM user_shifts "
-              + "WHERE CAST(date AS DATE) = CAST(GETDATE() AS DATE)";
-    try (Connection conn = getConnection(); 
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getInt("employee_count");
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return 0;
-}
-
-public int[] getEmployeesPerDayInWeek(String week) {
-    int[] employeesPerDay = new int[6]; // Thứ 2 đến Thứ 7
-    String sql = "SELECT DATEPART(WEEKDAY, date) AS day_of_week, COUNT(DISTINCT user_id) AS employee_count "
-              + "FROM user_shifts "
-              + "WHERE DATEPART(ISO_WEEK, date) = ? AND YEAR(date) = ? "
-              + "GROUP BY DATEPART(WEEKDAY, date)";
-    try (Connection conn = getConnection(); 
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        String[] arr = week.split("-W");
-        if (arr.length == 2) {
-            ps.setInt(1, Integer.parseInt(arr[1]));
-            ps.setString(2, arr[0]);
+        // In kết quả
+        if (userShifts.isEmpty()) {
+            System.out.println("Không tìm thấy ca làm việc nào.");
         } else {
-            return employeesPerDay; // Trả về mảng 0 nếu định dạng tuần không hợp lệ
-        }
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            int dayOfWeek = rs.getInt("day_of_week"); // 1=CN, 2=Th2, ..., 7=Th7
-            int count = rs.getInt("employee_count");
-            if (dayOfWeek >= 2 && dayOfWeek <= 7) { // Thứ 2 đến Thứ 7
-                employeesPerDay[dayOfWeek - 2] = count;
+            for (UserShift us : userShifts) {
+                System.out.println("ID: " + us.getId());
+                System.out.println("Date: " + us.getDate());
+                System.out.println("User: " + us.getUser().getFullName());
+                System.out.println("Shift: " + us.getShift().getShiftName() + " ("
+                        + us.getShift().getStartTime() + " - " + us.getShift().getEndTime() + ")");
+                if (us.getLocation() != null) {
+                    System.out.println("Location: " + us.getLocation().getName());
+                }
+                if (us.getDepartment() != null) {
+                    System.out.println("Department: " + us.getDepartment().getDepartmentName());
+                }
+                if (us.getAssignedBy() != null) {
+                    System.out.println("Assigned By: " + us.getAssignedBy().getFullName());
+                }
+                System.out.println("Note: " + us.getNote());
+                System.out.println("Assigned At: " + us.getAssignedAt());
+                System.out.println("------------------------");
             }
         }
-    } catch (Exception e) {
-        e.printStackTrace();
     }
-    return employeesPerDay;
-}
-    
+
+    public int getTotalEmployees() {
+        String sql = "SELECT COUNT(*) FROM users WHERE role = 'employee'";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public Map<String, Integer> getShiftsPerMonth(String year) {
+        Map<String, Integer> accountsPerMonth = new HashMap<>();
+        String sql = "SELECT FORMAT(created_at, 'yyyy-MM') AS month, COUNT(*) AS account_count "
+                + "FROM users "
+                + "WHERE YEAR(created_at) = ? "
+                + "AND role = 'employee' "
+                + "AND status = 'active' "
+                + "GROUP BY FORMAT(created_at, 'yyyy-MM')";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, year);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                accountsPerMonth.put(rs.getString("month"), rs.getInt("account_count"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Đảm bảo có dữ liệu cho 12 tháng, nếu không có thì trả về 0
+        for (int i = 1; i <= 12; i++) {
+            String month = String.format("%s-%02d", year, i);
+            accountsPerMonth.putIfAbsent(month, 0);
+        }
+        return accountsPerMonth;
+    }
+
+    public int getTodayWorkingEmployees() {
+        String sql = "SELECT COUNT(DISTINCT user_id) AS employee_count "
+                + "FROM user_shifts "
+                + "WHERE CAST(date AS DATE) = CAST(GETDATE() AS DATE)";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("employee_count");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int[] getEmployeesPerDayInWeek(String week) {
+        int[] employeesPerDay = new int[6]; // Thứ 2 đến Thứ 7
+        String sql = "SELECT DATEPART(WEEKDAY, date) AS day_of_week, COUNT(DISTINCT user_id) AS employee_count "
+                + "FROM user_shifts "
+                + "WHERE DATEPART(ISO_WEEK, date) = ? AND YEAR(date) = ? "
+                + "GROUP BY DATEPART(WEEKDAY, date)";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            String[] arr = week.split("-W");
+            if (arr.length == 2) {
+                ps.setInt(1, Integer.parseInt(arr[1]));
+                ps.setString(2, arr[0]);
+            } else {
+                return employeesPerDay; // Trả về mảng 0 nếu định dạng tuần không hợp lệ
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int dayOfWeek = rs.getInt("day_of_week"); // 1=CN, 2=Th2, ..., 7=Th7
+                int count = rs.getInt("employee_count");
+                if (dayOfWeek >= 2 && dayOfWeek <= 7) { // Thứ 2 đến Thứ 7
+                    employeesPerDay[dayOfWeek - 2] = count;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return employeesPerDay;
+    }
+
+    // Lấy số lần đi muộn theo tháng trong năm
+    public Map<String, Integer> getLateArrivalStats(String year) {
+        Map<String, Integer> lateArrivalStats = new HashMap<>();
+        String sql = """
+            SELECT FORMAT(date, 'yyyy-MM') AS month, COUNT(*) AS late_count
+            FROM user_shifts
+            WHERE YEAR(date) = ?
+            AND is_late = 1
+            GROUP BY FORMAT(date, 'yyyy-MM')
+        """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, year);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                lateArrivalStats.put(rs.getString("month"), rs.getInt("late_count"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Đảm bảo dữ liệu cho 12 tháng, nếu không có thì trả về 0
+        for (int i = 1; i <= 12; i++) {
+            String month = String.format("%s-%02d", year, i);
+            lateArrivalStats.putIfAbsent(month, 0);
+        }
+        return lateArrivalStats;
+    }
+
+    public Map<String, Integer> getBranchAttendance(String year) {
+        Map<String, Integer> branchAttendance = new HashMap<>();
+        String sql = """
+            SELECT l.name AS location_name, COUNT(*) AS attendance_count
+            FROM user_shifts us
+            JOIN locations l ON us.location_id = l.location_id
+            WHERE YEAR(us.date) = ?
+            GROUP BY l.name
+        """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, year);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                branchAttendance.put(rs.getString("location_name"), rs.getInt("attendance_count"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Thêm dữ liệu giả lập nếu không có chi nhánh (tuỳ chỉnh theo nhu cầu)
+        if (branchAttendance.isEmpty()) {
+            branchAttendance.put("Chi nhánh Hà Nội", 0);
+            branchAttendance.put("Chi nhánh TP.HCM", 0);
+            branchAttendance.put("Chi nhánh Đà Nẵng", 0);
+        }
+        return branchAttendance;
+    }
+
+    public Map<String, Double> getAverageLeaveDaysByDepartment(String year) {
+        Map<String, Double> avgLeaveDaysByDepartment = new HashMap<>();
+        String sql = """
+            SELECT d.department_name, 
+                   AVG(CASE WHEN us.is_permitted_leave = 1 THEN 1.0 
+                            WHEN us.is_unpermitted_leave = 1 THEN 1.0 
+                            ELSE 0 END) AS avg_leave_days
+            FROM user_shifts us
+            JOIN departments d ON us.department_id = d.department_id
+            WHERE YEAR(us.date) = ?
+            GROUP BY d.department_name
+        """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, year);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                avgLeaveDaysByDepartment.put(rs.getString("department_name"), rs.getDouble("avg_leave_days"));
+            }
+            // Thêm các giá trị tổng hợp cho widget
+            avgLeaveDaysByDepartment.put("totalPermitted", getTotalLeaveDays(year, true));
+            avgLeaveDaysByDepartment.put("totalUnpermitted", getTotalLeaveDays(year, false));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Đảm bảo dữ liệu cho các phòng ban giả lập nếu cần
+        if (avgLeaveDaysByDepartment.isEmpty()) {
+            avgLeaveDaysByDepartment.put("Phòng Kỹ thuật", 0.0);
+            avgLeaveDaysByDepartment.put("Phòng Nhân sự", 0.0);
+            avgLeaveDaysByDepartment.put("Phòng Kinh doanh", 0.0);
+            avgLeaveDaysByDepartment.put("totalPermitted", 0.0);
+            avgLeaveDaysByDepartment.put("totalUnpermitted", 0.0);
+        }
+        return avgLeaveDaysByDepartment;
+    }
+
+    private double getTotalLeaveDays(String year, boolean isPermitted) {
+        String sql = """
+            SELECT COUNT(*) AS leave_count
+            FROM user_shifts
+            WHERE YEAR(date) = ?
+            AND """ + (isPermitted ? "is_permitted_leave = 1" : "is_unpermitted_leave = 1");
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, year);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("leave_count") / 1.0; // Chuyển sang double
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
+
+    // So sánh số ngày công giữa tháng hiện tại và tháng trước
+    public Map<String, Integer> getAttendanceComparison(String currentMonth, String previousMonth) {
+        Map<String, Integer> attendanceComparison = new HashMap<>();
+        String sql = """
+            SELECT FORMAT(date, 'yyyy-MM') AS month, COUNT(*) AS work_days
+            FROM user_shifts
+            WHERE FORMAT(date, 'yyyy-MM') IN (?, ?)
+            AND (is_permitted_leave IS NULL OR is_permitted_leave = 0)
+            AND (is_unpermitted_leave IS NULL OR is_unpermitted_leave = 0)
+            GROUP BY FORMAT(date, 'yyyy-MM')
+        """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, previousMonth);
+            ps.setString(2, currentMonth);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                attendanceComparison.put(rs.getString("month"), rs.getInt("work_days"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Đảm bảo dữ liệu cho cả hai tháng
+        attendanceComparison.putIfAbsent(currentMonth, 0);
+        attendanceComparison.putIfAbsent(previousMonth, 0);
+        return attendanceComparison;
+    }
+
+    public List<String> getAllDepartmentNames() {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT DISTINCT department_name FROM Departments";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(rs.getString("department_name"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Integer> getLateAndLeaveByDepartment() {
+        List<Integer> result = new ArrayList<>();
+        String sql = """
+        SELECT d.department_id,
+               SUM(CASE WHEN a.checkin_time > '08:15:00' THEN 1 ELSE 0 END) AS late_count,
+               SUM(
+                   CASE WHEN lr.status = 'approved' THEN 1 ELSE 0 END
+               ) AS leave_count
+        FROM departments d
+        JOIN user_locations ul ON ul.department_id = d.department_id
+        JOIN users u ON u.user_id = ul.user_id
+        LEFT JOIN attendance a ON a.user_id = u.user_id
+        LEFT JOIN leave_requests lr ON lr.user_id = u.user_id
+        GROUP BY d.department_id
+        ORDER BY d.department_id
+    """;
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int late = rs.getInt("late_count");
+                int leave = rs.getInt("leave_count");
+                result.add(late + leave);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public int getLateCount(String departmentId) {
+        String sql = """
+        SELECT COUNT(*) FROM attendance a
+        JOIN users u ON a.user_id = u.user_id
+        JOIN user_locations ul ON ul.user_id = u.user_id
+        WHERE ul.department_id = ? AND a.checkin_time > '08:15:00'
+    """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, departmentId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getWorkingDays(String departmentId) {
+        String sql = """
+        SELECT COUNT(*) FROM attendance a
+        JOIN users u ON a.user_id = u.user_id
+        JOIN user_locations ul ON ul.user_id = u.user_id
+        WHERE ul.department_id = ?
+          AND a.checkin_time IS NOT NULL
+          AND a.checkout_time IS NOT NULL
+    """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, departmentId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getLeaveCount(String departmentId) {
+        String sql = """
+        SELECT COUNT(*) FROM leave_requests lr
+        JOIN users u ON lr.user_id = u.user_id
+        JOIN user_locations ul ON ul.user_id = u.user_id
+        WHERE ul.department_id = ? AND lr.status = 'approved'
+    """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, departmentId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public Map<String, Integer> getLateCountsByMonth() {
+        Map<String, Integer> result = new LinkedHashMap<>();
+        String sql = """
+        SELECT FORMAT([date], 'yyyy-MM') AS month, COUNT(*) AS totalLate
+        FROM attendance
+        WHERE checkin_time > '08:15:00'
+        GROUP BY FORMAT([date], 'yyyy-MM')
+        ORDER BY month
+    """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                result.put(rs.getString("month"), rs.getInt("totalLate"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public Map<String, Integer> getLeaveCountsByMonth() {
+        Map<String, Integer> result = new LinkedHashMap<>();
+        String sql = """
+        SELECT FORMAT(start_date, 'yyyy-MM') AS month, COUNT(*) AS totalLeave
+        FROM leave_requests
+        WHERE status = 'approved'
+        GROUP BY FORMAT(start_date, 'yyyy-MM')
+        ORDER BY month
+    """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                result.put(rs.getString("month"), rs.getInt("totalLeave"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public Map<String, Integer> getWorkingDaysByMonth() {
+        Map<String, Integer> result = new LinkedHashMap<>();
+        String sql = """
+        SELECT FORMAT([date], 'yyyy-MM') AS month, COUNT(DISTINCT [date]) AS workDays
+        FROM attendance
+        WHERE checkin_time IS NOT NULL AND checkout_time IS NOT NULL
+        GROUP BY FORMAT([date], 'yyyy-MM')
+        ORDER BY month
+    """;
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                result.put(rs.getString("month"), rs.getInt("workDays"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
 }

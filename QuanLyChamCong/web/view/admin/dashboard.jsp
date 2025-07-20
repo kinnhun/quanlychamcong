@@ -196,12 +196,12 @@
                                     <button class="btn btn-primary mt-2">Duyệt tất cả</button>
                                 </div>
                             </div>
-                            
-                            
-                            
-                            
-                            
-                            
+
+
+
+
+
+
                         </div>
 
                         <!-- Cột giữa: Biểu đồ -->
@@ -328,6 +328,135 @@
                             </div>
                         </div>
                     </div>
+
+
+                    <!-- Biểu đồ tỷ lệ đi muộn và nghỉ -->
+                    <div class="card mb-4">
+                        <div class="card-header">Tỷ lệ đi muộn & nghỉ phép theo phòng ban</div>
+                        <div class="card-body d-flex justify-content-center">
+                            <div class="w-100" style="max-width: 800px;">
+                                <canvas id="departmentPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        const departmentPieCtx = document.getElementById('departmentPieChart').getContext('2d');
+                        new Chart(departmentPieCtx, {
+                            type: 'pie',
+                            data: {
+                                labels: ${departmentNames}, // ví dụ: ['Phòng Kinh doanh', 'Kỹ thuật', 'Nhân sự']
+                                datasets: [{
+                                        data: ${lateAndLeaveCounts}, // ví dụ: [30, 25, 10]
+                                        backgroundColor: ['#dc3545', '#ffc107', '#007bff']
+                                    }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            padding: 10,
+                                            boxWidth: 18
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+
+
+
+                    <!-- So sánh dữ liệu chấm công -->
+                    <div class="card">
+                        <div class="card-header">So sánh dữ liệu tháng này và tháng trước</div>
+                        <div class="card-body">
+                            <canvas id="compareChart"></canvas>
+                        </div>
+                    </div>
+
+                    <script>
+                        const compareCtx = document.getElementById('compareChart').getContext('2d');
+                        new Chart(compareCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Đi muộn', 'Nghỉ phép', 'Ngày công'],
+                                datasets: [
+                                    {
+                                        label: 'Tháng trước',
+                                        data: [${lastMonthLate}, ${lastMonthLeave}, ${lastMonthWorkdays}],
+                                        backgroundColor: '#6c757d'
+                                    },
+                                    {
+                                        label: 'Tháng này',
+                                        data: [${thisMonthLate}, ${thisMonthLeave}, ${thisMonthWorkdays}],
+                                        backgroundColor: '#28a745'
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {beginAtZero: true}
+                                }
+                            }
+                        });
+                    </script>
+
+                    <!-- Biểu đồ xu hướng 12 tháng -->
+                    <div class="card mb-4">
+                        <div class="card-header">Xu hướng chấm công 12 tháng gần đây</div>
+                        <div class="card-body">
+                            <canvas id="monthlyCompareChart" height="120"></canvas>
+                        </div>
+                    </div>
+
+                    <script>
+                        const monthlyCompareCtx = document.getElementById('monthlyCompareChart').getContext('2d');
+                        new Chart(monthlyCompareCtx, {
+                            type: 'line',
+                            data: {
+                                labels: ${months}, // ví dụ: ["2024-08", "2024-09", ..., "2025-07"]
+                                datasets: [
+                                    {
+                                        label: 'Đi muộn',
+                                        data: ${lateChartData},
+                                        borderColor: '#dc3545',
+                                        fill: false
+                                    },
+                                    {
+                                        label: 'Nghỉ phép',
+                                        data: ${leaveChartData},
+                                        borderColor: '#ffc107',
+                                        fill: false
+                                    },
+                                    {
+                                        label: 'Ngày công',
+                                        data: ${workChartData},
+                                        borderColor: '#28a745',
+                                        fill: false
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'top'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+
+
 
                     <!-- Dòng thứ ba: Tin tức -->
                     <div class="row mt-4">

@@ -5,6 +5,7 @@ fs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this tem
  */
 package controller.admin;
 
+import com.google.gson.Gson;
 import dal.ShiftDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -51,6 +52,7 @@ public class AdminDashboardController extends HttpServlet {
 
     /**
      * Lấy year và week động dựa trên ngày hiện tại
+     *
      * @return Map chứa year và week (định dạng yyyy-Www)
      */
     private Map<String, String> getCurrentYearAndWeek() {
@@ -63,7 +65,7 @@ public class AdminDashboardController extends HttpServlet {
         return result;
     }
 
-     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -99,6 +101,30 @@ public class AdminDashboardController extends HttpServlet {
         // Số nhân viên làm việc mỗi ngày trong tuần hiện tại
         int[] employeesPerDay = sdao.getEmployeesPerDayInWeek(week);
         request.setAttribute("employeesPerDay", employeesPerDay);
+
+        List<String> departmentNames = sdao.getAllDepartmentNames();
+        List<Integer> lateAndLeaveCounts = sdao.getLateAndLeaveByDepartment(); // Map hoặc 2 mảng song song
+
+        request.setAttribute("departmentNames", new Gson().toJson(departmentNames));
+        request.setAttribute("lateAndLeaveCounts", new Gson().toJson(lateAndLeaveCounts));
+
+        request.setAttribute("lastMonthLate", sdao.getLateCount("2025-06"));
+        request.setAttribute("lastMonthLeave", sdao.getLeaveCount("2025-06"));
+        request.setAttribute("lastMonthWorkdays", sdao.getWorkingDays("2025-06"));
+
+        request.setAttribute("thisMonthLate", sdao.getLateCount("2025-07"));
+        request.setAttribute("thisMonthLeave", sdao.getLeaveCount("2025-07"));
+        request.setAttribute("thisMonthWorkdays", sdao.getWorkingDays("2025-07"));
+
+        Map<String, Integer> lateByMonth = sdao.getLateCountsByMonth();
+        Map<String, Integer> leaveByMonth = sdao.getLeaveCountsByMonth();
+        Map<String, Integer> workdaysByMonth = sdao.getWorkingDaysByMonth();
+
+        Gson gson = new Gson();
+        request.setAttribute("months", gson.toJson(lateByMonth.keySet()));
+        request.setAttribute("lateChartData", gson.toJson(lateByMonth.values()));
+        request.setAttribute("leaveChartData", gson.toJson(leaveByMonth.values()));
+        request.setAttribute("workChartData", gson.toJson(workdaysByMonth.values()));
 
         request.getRequestDispatcher("/view/admin/dashboard.jsp").forward(request, response);
     }

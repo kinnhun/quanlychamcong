@@ -33,7 +33,6 @@ public class EmployeeShiftChangeRequestController extends HttpServlet {
 protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
     try {
-        // Lấy dữ liệu từ form
         int userId = Integer.parseInt(req.getParameter("userId"));
         int fromShiftId = Integer.parseInt(req.getParameter("fromShiftId"));
         int toShiftId = Integer.parseInt(req.getParameter("toShiftId"));
@@ -46,7 +45,6 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             return;
         }
 
-        // Tạo đối tượng request
         ShiftChangeRequest request = new ShiftChangeRequest();
         request.setUserId(new Users(userId));
         request.setFromShiftId(new Shift(fromShiftId));
@@ -55,7 +53,6 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         request.setReason(reason);
         request.setStatus("pending");
 
-        // Gọi DAO insert vào DB
         ShiftDAO shiftDAO = new ShiftDAO();
         boolean inserted = shiftDAO.insertShiftChangeRequest(request);
 

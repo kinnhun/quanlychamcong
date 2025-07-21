@@ -21,7 +21,6 @@
         <div class="page-wrapper">
             <div class="container-fluid">
 
-                <!-- Thông báo -->
                 <c:import url="/view/compomnt/notification.jsp"/>
 
                 <!-- Lịch sử đổi ca -->

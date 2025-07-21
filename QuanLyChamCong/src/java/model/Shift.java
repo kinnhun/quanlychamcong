@@ -24,6 +24,10 @@ public class Shift {
         this.createdAt = createdAt;
     }
 
+    public Shift(int fromShiftId) {
+        this.shiftId = shiftId;
+    }
+
     public int getShiftId() {
         return shiftId;
     }

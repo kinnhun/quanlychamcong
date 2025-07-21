@@ -192,6 +192,20 @@
                         </li>
 
                         <li class="sidebar-item">
+                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/employee/shift-change-request">
+                                <i data-feather="repeat" class="feather-icon"></i>
+                                <span class="hide-menu">Yêu cầu đổi ca</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/employee/shift-change-history">
+                                <i data-feather="file-text" class="feather-icon"></i>
+                                <span class="hide-menu">Lịch sử đổi ca</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
                             <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/logout">
                                 <i data-feather="log-out" class="feather-icon"></i>
                                 <span class="hide-menu">Đăng xuất</span>

@@ -18,6 +18,7 @@ import model.UserShift;
 import model.Users;
 import java.sql.Date;
 import java.sql.Types;
+import model.ShiftChangeRequest;
 
 public class ShiftDAO extends DBContext {
 
@@ -695,44 +696,6 @@ public class ShiftDAO extends DBContext {
         return list;
     }
 
-    public static void main(String[] args) {
-        // Giả sử bạn có một instance của class chứa phương thức getUserShiftsByEmployee
-        ShiftDAO yourClass = new ShiftDAO(); // Thay YourClass bằng tên class của bạn
-
-        // Test với userId, week và month
-        int userId = 1;
-        String week = "2025-W25"; // Tuần 1 năm 2025
-        String month = "2025-06"; // Tháng 1 năm 2025
-
-        // Gọi phương thức
-        List<UserShift> userShifts = yourClass.getUserShiftsByEmployee(userId, week, month);
-
-        // In kết quả
-        if (userShifts.isEmpty()) {
-            System.out.println("Không tìm thấy ca làm việc nào.");
-        } else {
-            for (UserShift us : userShifts) {
-                System.out.println("ID: " + us.getId());
-                System.out.println("Date: " + us.getDate());
-                System.out.println("User: " + us.getUser().getFullName());
-                System.out.println("Shift: " + us.getShift().getShiftName() + " ("
-                        + us.getShift().getStartTime() + " - " + us.getShift().getEndTime() + ")");
-                if (us.getLocation() != null) {
-                    System.out.println("Location: " + us.getLocation().getName());
-                }
-                if (us.getDepartment() != null) {
-                    System.out.println("Department: " + us.getDepartment().getDepartmentName());
-                }
-                if (us.getAssignedBy() != null) {
-                    System.out.println("Assigned By: " + us.getAssignedBy().getFullName());
-                }
-                System.out.println("Note: " + us.getNote());
-                System.out.println("Assigned At: " + us.getAssignedAt());
-                System.out.println("------------------------");
-            }
-        }
-    }
-
     public int getTotalEmployees() {
         String sql = "SELECT COUNT(*) FROM users WHERE role = 'employee'";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -1104,6 +1067,100 @@ public class ShiftDAO extends DBContext {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public boolean insertShiftChangeRequest(ShiftChangeRequest request) {
+        String sql = """
+        INSERT INTO shift_change_requests 
+        (user_id, from_shift_id, to_shift_id, date, reason, status)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """;
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, request.getUserId().getUserId());
+            ps.setInt(2, request.getFromShiftId().getShiftId());
+            ps.setInt(3, request.getToShiftId().getShiftId());
+            ps.setDate(4, request.getDate());
+            ps.setString(5, request.getReason());
+            ps.setString(6, request.getStatus());
+
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<Shift> getAllShifts() {
+        List<Shift> list = new ArrayList<>();
+        String sql = "SELECT shift_id, shift_name, start_time, end_time, description, created_at FROM shifts";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Shift shift = new Shift();
+                shift.setShiftId(rs.getInt("shift_id"));
+                shift.setShiftName(rs.getString("shift_name"));
+                shift.setStartTime(rs.getTime("start_time"));
+                shift.setEndTime(rs.getTime("end_time"));
+                shift.setDescription(rs.getString("description"));
+                shift.setCreatedAt(rs.getTimestamp("created_at"));
+                list.add(shift);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<ShiftChangeRequest> getShiftChangeRequestsByUserId(int userId) {
+        List<ShiftChangeRequest> list = new ArrayList<>();
+        String sql = """
+        SELECT scr.*, 
+               fs.shift_name AS from_name, fs.start_time AS from_start, fs.end_time AS from_end,
+               ts.shift_name AS to_name, ts.start_time AS to_start, ts.end_time AS to_end
+        FROM shift_change_requests scr
+        JOIN shifts fs ON scr.from_shift_id = fs.shift_id
+        JOIN shifts ts ON scr.to_shift_id = ts.shift_id
+        WHERE scr.user_id = ?
+        ORDER BY scr.created_at DESC
+    """;
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ShiftChangeRequest req = new ShiftChangeRequest();
+                req.setRequestId(rs.getInt("request_id"));
+                req.setDate(rs.getDate("date"));
+                req.setReason(rs.getString("reason"));
+                req.setStatus(rs.getString("status"));
+                req.setCreatedAt(rs.getTimestamp("created_at"));
+
+                Shift fromShift = new Shift();
+                fromShift.setShiftId(rs.getInt("from_shift_id"));
+                fromShift.setShiftName(rs.getString("from_name"));
+                fromShift.setStartTime(rs.getTime("from_start"));
+                fromShift.setEndTime(rs.getTime("from_end"));
+                req.setFromShiftId(fromShift);
+
+                Shift toShift = new Shift();
+                toShift.setShiftId(rs.getInt("to_shift_id"));
+                toShift.setShiftName(rs.getString("to_name"));
+                toShift.setStartTime(rs.getTime("to_start"));
+                toShift.setEndTime(rs.getTime("to_end"));
+                req.setToShiftId(toShift);
+
+                list.add(req);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
 }

@@ -3,8 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package conntroller.employee;
+package controller.employee;
 
+import dal.LeaveRequestDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,10 +13,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
+import model.LeaveRequest;
+import model.Users;
 
 
-@WebServlet(name="EmployeeDashboardController", urlPatterns={"/employee-dashboard"})
-public class EmployeeDashboardController extends HttpServlet {
+@WebServlet(name="EmployeeLeaveRequestListController", urlPatterns={"/employee/leave-requests"})
+public class EmployeeLeaveRequestListController extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -32,10 +36,10 @@ public class EmployeeDashboardController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet EmployeeDashboardController</title>");  
+            out.println("<title>Servlet EmployeeLeaveRequestListController</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet EmployeeDashboardController at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet EmployeeLeaveRequestListController at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -51,9 +55,19 @@ public class EmployeeDashboardController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
-    } 
+            throws ServletException, IOException {
+
+        Users user = (Users) request.getSession().getAttribute("user");
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        LeaveRequestDAO dao = new LeaveRequestDAO();
+        List<LeaveRequest> list = dao.getRequestsByUserId(user.getUserId());
+        request.setAttribute("requests", list);
+        request.getRequestDispatcher("/view/employee/leave-request-list.jsp").forward(request, response);
+    }
 
     /** 
      * Handles the HTTP <code>POST</code> method.

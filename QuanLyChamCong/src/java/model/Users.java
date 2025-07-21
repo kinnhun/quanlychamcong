@@ -53,6 +53,10 @@ public class Users {
         this.banReason = banReason;
     }
 
+    public Users(int userId) {
+        this.userId = userId;
+    }
+
    
 
     public int getUserId() {

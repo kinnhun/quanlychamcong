@@ -3,10 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/koro3/hung/New%20folder%20(2)/quanlychamcong/QuanLyChamCong/web/view/admin/attendance-report.jsp</file>
-            <file>file:/D:/koro3/hung/New%20folder%20(2)/quanlychamcong/QuanLyChamCong/src/java/controller/admin/AdminAttendanceSummaryController.java</file>
-            <file>file:/D:/koro3/hung/New%20folder%20(2)/quanlychamcong/QuanLyChamCong/web/view/admin/blank.jsp</file>
-            <file>file:/D:/koro3/hung/New%20folder%20(2)/quanlychamcong/QuanLyChamCong/web/view/admin/attendance-report1.jsp</file>
+            <file>file:/D:/koro3/hung/New%20folder%20(2)/quanlychamcong/QuanLyChamCong/web/view/employee/shift-change-form.jsp</file>
+            <file>file:/D:/koro3/hung/New%20folder%20(2)/quanlychamcong/QuanLyChamCong/src/java/controller/employee/EmployeeShiftChangeRequestController.java</file>
+            <file>file:/D:/koro3/hung/New%20folder%20(2)/quanlychamcong/QuanLyChamCong/src/java/dal/ShiftDAO.java</file>
         </group>
     </open-files>
 </project-private>

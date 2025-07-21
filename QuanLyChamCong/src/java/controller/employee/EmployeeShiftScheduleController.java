@@ -1,4 +1,4 @@
-package conntroller.employee;
+package controller.employee;
 
 import dal.ShiftDAO;
 import model.UserShift;
